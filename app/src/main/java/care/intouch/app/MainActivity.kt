@@ -43,11 +43,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var deepLinksMapper: DeepLinksMapper
-
-    private var deepLinkResultWrapper: DeepLinkResultWrapper = DeepLinkResultWrapper.AbsentDeepLink
-
     private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,10 +52,6 @@ class MainActivity : ComponentActivity() {
             }
         }
         super.onCreate(savedInstanceState)
-
-        if (intent?.action == Intent.ACTION_VIEW) {
-            deepLinkResultWrapper = deepLinksMapper.handleDeepLink(data = intent?.data)
-        }
 
         enableEdgeToEdge()
         setContent {
@@ -97,25 +88,12 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Column {
                         if (BuildConfig.DEBUG) {
-                            when(deepLinkResultWrapper) {
-                                is DeepLinkResultWrapper.ResetPasswordDeepLink -> {
-                                    AppNavScreen(
-                                        startDestination = AuthorizationRouteBranch.route,
-                                        authStartDestination = Registration.route
-                                    )
-                                }
-                                is DeepLinkResultWrapper.AbsentDeepLink -> {
-                                    MainNavHost(
-                                        navController = rememberNavController(),
-                                        isAuthenticate = isAuthenticate
-                                    )
-                                }
-                            }
+
+                            MainNavHost(
+                                navController = rememberNavController(),
+                                isAuthenticate = isAuthenticate
+                            )
                         } else {
-                            val currentRoute = when(deepLinkResultWrapper) {
-                                DeepLinkResultWrapper.ResetPasswordDeepLink -> Registration.route
-                                DeepLinkResultWrapper.AbsentDeepLink -> Authentication.route
-                            }
 
                             val startDestination = if (isAuthenticate) {
                                 Home.route
@@ -125,7 +103,7 @@ class MainActivity : ComponentActivity() {
 
                             AppNavScreen(
                                 startDestination = startDestination,
-                                authStartDestination = currentRoute
+                                authStartDestination = Authentication.route
                             )
                         }
                     }

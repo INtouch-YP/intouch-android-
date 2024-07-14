@@ -20,6 +20,7 @@ import care.intouch.app.feature.home.presentation.ui.HomeScreen
 import care.intouch.app.feature.plan.presentation.ui.PlanScreen
 import care.intouch.app.feature.profile.presentation.ui.profile.ProfileScreen
 import care.intouch.app.feature.profile.presentation.ui.security.SecurityScreenInit
+import timber.log.Timber
 
 @Composable
 fun AppNavHost(
@@ -28,6 +29,8 @@ fun AppNavHost(
     authStartDestination: String?,
     modifier: Modifier
 ) {
+    Timber.tag("NAV").d("Start destination $startDestination, authStartDestination $authStartDestination")
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
