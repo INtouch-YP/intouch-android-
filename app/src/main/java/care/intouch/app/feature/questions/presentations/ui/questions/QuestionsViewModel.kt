@@ -42,6 +42,30 @@ class QuestionsViewModel @Inject constructor(
             is QuestionEvent.OnBlockChange -> {
                 updateState(event)
             }
+
+            is QuestionEvent.OnCheckedToggle -> {
+                _state.update {
+                    _state.value.copy(
+                        isCheckedToggle = event.isChecked
+                    )
+                }
+            }
+
+            is QuestionEvent.OnShowClosingDialog -> {
+                _state.update {
+                    _state.value.copy(
+                        isShowClosingDialog = event.isShow
+                    )
+                }
+            }
+
+            is QuestionEvent.OnShowCompleteTaskDialog -> {
+                _state.update {
+                    _state.value.copy(
+                        isShowCompleteTaskDialog = event.isShow
+                    )
+                }
+            }
         }
     }
 

@@ -29,11 +29,12 @@ import care.intouch.uikit.ui.textFields.MultilineTextFieldDefaults.BLANC_STRING
 @Composable
 fun TextFieldWithCheckmars(
     modifier: Modifier = Modifier,
+    onClick: (Int) -> Unit,
     titleText: StringVO = StringVO.Plain(BLANC_STRING),
     subtitleText: StringVO = StringVO.Plain(BLANC_STRING),
     captionText: StringVO = StringVO.Plain(BLANC_STRING),
     backgroundColor: Color = InTouchTheme.colors.input85,
-    listOfChoiceReplise: MutableList<String> = mutableListOf()
+    listOfChoiceReplise: MutableList<Pair<String, Int>> = mutableListOf()
 ) {
     Column(
         modifier = modifier.width(MultilineTextFieldDefaults.MinWidth)
@@ -95,18 +96,19 @@ fun TextFieldWithCheckmars(
                 listOfChoiceReplise.forEach { item ->
                     Spacer(modifier = Modifier.height(10.dp))
                     CheckmarkWithText(
-                        isChecked = selectedOptions.value.contains(item),
-                        text = item,
+                        isChecked = selectedOptions.value.contains(item.first),
+                        text = item.first,
                         modifier = Modifier.padding(start = 24.dp, end = 22.dp),
                         onChangeState = { selected ->
                             val currentSelected = selectedOptions.value.toMutableSet()
                             if (selected) {
-                                currentSelected.remove(item)
+                                currentSelected.remove(item.first)
                             }
                             else {
-                                currentSelected.add(item)
+                                currentSelected.add(item.first)
                             }
                             selectedOptions.value = currentSelected
+                            onClick(item.second)
                         }
                     )
                 }
@@ -120,14 +122,18 @@ fun TextFieldWithCheckmars(
 @Preview
 @Composable
 fun TextFieldWithCheckmarksPreview() {
-    val items = mutableListOf("Первый", "Второй")
+    val items = mutableListOf(
+        Pair("Первый", 1),
+        Pair("Второй", 2),
+        Pair("Третий", 3))
     InTouchTheme {
         TextFieldWithCheckmars(
             titleText = StringVO.Plain("Title small "),
             subtitleText = StringVO.Plain("Body semi bold "),
             captionText = StringVO.Plain("Caption "),
             modifier = Modifier.padding(45.dp),
-            listOfChoiceReplise = items
+            listOfChoiceReplise = items,
+            onClick = {}
         )
     }
 }

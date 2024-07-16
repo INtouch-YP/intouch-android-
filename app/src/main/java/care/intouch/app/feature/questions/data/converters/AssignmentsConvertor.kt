@@ -130,7 +130,9 @@ class AssignmentsConvertor @Inject constructor() {
             val thirdKeyPosition = description.indexOf(thirdKey)
             val type = description.substring(firstKeyPosition + firstKey.length, secondKeyPosition)
             val text = description.substring(secondKeyPosition + secondKey.length, thirdKeyPosition)
-            result.add(BlockDescription(getTypeOfTitle(type), text))
+            if(text.isNotEmpty()){
+                result.add(BlockDescription(getTypeOfTitle(type), text))
+            }
             description = description.substring(thirdKeyPosition + thirdKey.length)
         }
         return result

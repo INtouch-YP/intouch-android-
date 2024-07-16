@@ -11,4 +11,17 @@ sealed class QuestionEvent {
         val type: TypeOfBlocks,
         val selectedValue: Int? = null,
     ): QuestionEvent()
+
+    data class OnCheckedToggle(
+        val isChecked: Boolean
+    ): QuestionEvent()
+
+    data class OnShowClosingDialog(
+        val isShow: Boolean
+    ): QuestionEvent()
+
+    data class OnShowCompleteTaskDialog(
+        val isShow: Boolean
+    ): QuestionEvent()
+
 }
