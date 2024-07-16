@@ -9,7 +9,7 @@ data class AssignmentsBlock(
     val question: String,
     val reply: String,
     val description: List<BlockDescription>,
-    val type: String,
+    val type: TypeOfBlocks,
     val startRange: Int,
     val endRange: Int,
 )

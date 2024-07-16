@@ -7,6 +7,7 @@ import care.intouch.app.feature.questions.domain.models.Assignments
 import care.intouch.app.feature.questions.domain.models.AssignmentsBlock
 import care.intouch.app.feature.questions.domain.models.AssignmentsChoiceReplies
 import care.intouch.app.feature.questions.domain.models.BlockDescription
+import care.intouch.app.feature.questions.domain.models.TypeOfBlocks
 import care.intouch.app.feature.questions.domain.models.TypeOfTitle
 import javax.inject.Inject
 
@@ -51,7 +52,7 @@ class AssignmentsConvertor @Inject constructor() {
             reply = assignmentsBlock.reply,
             //description = assignmentsBlock.description,
             description = "Нужно ли это поле вообще???",
-            type = assignmentsBlock.type,
+            type = getTypeOfBlock(assignmentsBlock.type),
             startRange = assignmentsBlock.startRange,
             endRange = assignmentsBlock.endRange
         )
@@ -103,7 +104,7 @@ class AssignmentsConvertor @Inject constructor() {
             question = assignmentsBlock.question,
             reply = assignmentsBlock.reply,
             description = descriptionParse(assignmentsBlock.description),
-            type = assignmentsBlock.type,
+            type = getTypeOfBlock(assignmentsBlock.type),
             startRange = assignmentsBlock.startRange,
             endRange = assignmentsBlock.endRange
         )
@@ -117,13 +118,13 @@ class AssignmentsConvertor @Inject constructor() {
         )
     }
 
-    private fun descriptionParse(str: String): List<BlockDescription>{
+    private fun descriptionParse(str: String): List<BlockDescription> {
         val result: MutableList<BlockDescription> = mutableListOf()
         var description = str
         val firstKey = "\\\"type\\\":\\\""
         val secondKey = "\\\",\\\"text\\\":\\\""
         val thirdKey = "\\\",\\\"characterList"
-        while(description.contains(firstKey)) {
+        while (description.contains(firstKey)) {
             val firstKeyPosition = description.indexOf(firstKey)
             val secondKeyPosition = description.indexOf(secondKey)
             val thirdKeyPosition = description.indexOf(thirdKey)
@@ -135,12 +136,36 @@ class AssignmentsConvertor @Inject constructor() {
         return result
     }
 
-    private fun getTypeOfTitle(str: String): TypeOfTitle{
-        return when(str){
+    private fun getTypeOfTitle(str: String): TypeOfTitle {
+        return when (str) {
             "unstyled" -> TypeOfTitle.UNSTYLED
             "header-one" -> TypeOfTitle.HEADER_ONE
             "header-two" -> TypeOfTitle.HEADER_TWO
             else -> TypeOfTitle.UNSTYLED
+        }
+    }
+
+    private fun getTypeOfBlock(type: String): TypeOfBlocks {
+        return when (type) {
+            "open" -> TypeOfBlocks.OPEN
+            "single" -> TypeOfBlocks.SINGLE
+            "multiple" -> TypeOfBlocks.MULTIPLE
+            "range" -> TypeOfBlocks.RANGE
+            "text" -> TypeOfBlocks.TEXT
+            "image" -> TypeOfBlocks.IMAGE
+            else -> TypeOfBlocks.UNDEFINED
+        }
+    }
+
+    private fun getTypeOfBlock(type: TypeOfBlocks): String {
+        return when (type) {
+            TypeOfBlocks.OPEN -> "open"
+            TypeOfBlocks.SINGLE -> "single"
+            TypeOfBlocks.MULTIPLE -> "multiple"
+            TypeOfBlocks.RANGE -> "range"
+            TypeOfBlocks.TEXT -> "text"
+            TypeOfBlocks.IMAGE -> "image"
+            TypeOfBlocks.UNDEFINED -> ""
         }
     }
 }

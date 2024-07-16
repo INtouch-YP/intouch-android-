@@ -1,6 +1,5 @@
 package care.intouch.app.feature.questions.presentations.ui.questions
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -37,6 +36,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import care.intouch.app.R
+import care.intouch.app.feature.questions.domain.models.TypeOfBlocks
+import care.intouch.app.feature.questions.presentations.ui.models.QuestionsBlock
 import care.intouch.app.feature.questions.presentations.ui.models.QuestionsState
 import care.intouch.uikit.common.StringVO
 import care.intouch.uikit.theme.InTouchTheme
@@ -50,6 +51,9 @@ import care.intouch.uikit.ui.questions.TextFieldWithSliderAndDigits
 import care.intouch.uikit.ui.textFields.MultilineTextField
 import care.intouch.uikit.ui.toggle.Toggle
 import coil.compose.AsyncImage
+import care.intouch.app.feature.questions.domain.models.BlockDescription
+import care.intouch.app.feature.questions.domain.models.TypeOfTitle
+import care.intouch.app.feature.questions.presentations.ui.models.QuestionEvent
 
 @Composable
 fun QuestionsScreen(
@@ -63,7 +67,7 @@ fun QuestionsScreen(
         onCloseClick = onCloseClick,
         onCompleteTaskClick = onCompleteTaskClick,
         onEvent = {
-            viewModel.onEvent()
+            viewModel.onEvent(it)
         },
         state = state
     )
@@ -74,11 +78,11 @@ fun QuestionsScreen(
 private fun QuestionsScreen(
     onCloseClick: () -> Unit,
     onCompleteTaskClick: () -> Unit,
-    onEvent: () -> Unit,
+    onEvent: (QuestionEvent) -> Unit,
     state: QuestionsState
 ) {
 
-    var answerText by remember { mutableStateOf("") }
+    //var answerText by remember { mutableStateOf("") }
     val systemKeyboardController = LocalSoftwareKeyboardController.current
     var isCheckedToggle by remember {
         mutableStateOf(false)
@@ -122,17 +126,21 @@ private fun QuestionsScreen(
 
             state.blocks.forEachIndexed { index, block ->
                 when(block.type) {
-                   "open" -> {
+                    TypeOfBlocks.OPEN -> {
                        MultilineTextField(
                            subtitleText = StringVO.Plain(block.question),
                            captionText = StringVO.Resource(R.string.inscribe_motivates_question),
-                           value = answerText,
+                           value = block.reply,
                            modifier = Modifier.fillMaxWidth(),
                            hint = StringVO.Resource(R.string.write_your_answer_here),
                            onValueChange = {
-                               answerText = it
+                               onEvent(QuestionEvent.OnBlockChange(
+                                   id = block.id,
+                                   reply = it,
+                                   type = TypeOfBlocks.OPEN,
+                               ))
                            },
-                           isError = if (isShowCompleteTaskDialog && answerText.isBlank()) true else false,
+                           isError = if (isShowCompleteTaskDialog && block.reply.isBlank()) true else false,
                            enabled = true,
                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                            keyboardActions = KeyboardActions(onDone = {
@@ -142,7 +150,7 @@ private fun QuestionsScreen(
                        Spacer(modifier = Modifier.height( if (state.blocks.size - 1 == index) 34.dp else 40.dp))
                    }
 
-                    "single" -> {
+                    TypeOfBlocks.SINGLE -> {
                         val replyTextList: MutableList<String> = mutableListOf()
                         block.choiceReplies?.forEach {
                             replyTextList.add(it.reply)
@@ -155,7 +163,7 @@ private fun QuestionsScreen(
                         Spacer(modifier = Modifier.height( if (state.blocks.size - 1 == index) 34.dp else 40.dp))
                     }
 
-                    "multiple" -> {
+                    TypeOfBlocks.MULTIPLE -> {
                         val replyTextList: MutableList<String> = mutableListOf()
                         block.choiceReplies?.forEach {
                             replyTextList.add(it.reply)
@@ -169,7 +177,7 @@ private fun QuestionsScreen(
                         Spacer(modifier = Modifier.height( if (state.blocks.size - 1 == index) 34.dp else 40.dp))
                     }
 
-                    "range" -> {
+                    TypeOfBlocks.RANGE -> {
                         TextFieldWithSliderAndDigits(
                             subtitleText = StringVO.Plain(block.question),
                             modifier = Modifier.fillMaxWidth(),
@@ -183,7 +191,7 @@ private fun QuestionsScreen(
                         Spacer(modifier = Modifier.height( if (state.blocks.size - 1 == index) 34.dp else 40.dp))
                     }
 
-                    "text" -> {
+                    TypeOfBlocks.TEXT -> {
                         TextFieldQuestion(
                             modifier = Modifier.fillMaxWidth(),
                             isError = false,
@@ -197,7 +205,7 @@ private fun QuestionsScreen(
                         Spacer(modifier = Modifier.height( if (state.blocks.size - 1 == index) 34.dp else 40.dp))
                     }
 
-                    "image" -> {
+                    TypeOfBlocks.IMAGE -> {
                         Box(modifier = Modifier
                             .background(
                                 color = InTouchTheme.colors.input85,
@@ -272,7 +280,6 @@ private fun QuestionsScreen(
             content = {
                 PopupQuestions(
                     inTouchButtonClick = {
-
                     },
                     secondaryButtonClick = {
                         isShowClosingDialog = !isShowClosingDialog
@@ -313,25 +320,50 @@ private fun QuestionsScreen(
 @Preview(showBackground = true, heightDp = 1960)
 @Composable
 fun QuestionsScreenPreview() {
-    val state = QuestionsState(0,
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        0,
-        "",
-        emptyList(),
-        0,
-        "",
-        0,
-        false,
-        null,
-        "",
-        0
+    val blocks: MutableList<QuestionsBlock> = mutableListOf(
+        QuestionsBlock(
+            id = 7,
+            choiceReplies = null,
+            leftPole = "",
+            rightPole = "",
+            image = null,
+            question = "Это текстовый блок (text)\n\nЭто заголовок 1\n\nЭто заголовок 2",
+            reply = "",
+            description = mutableListOf(
+                BlockDescription(
+                    type = TypeOfTitle.UNSTYLED,
+                    text = "Это текстовый блок (text)",
+                ),
+                BlockDescription(
+                    type = TypeOfTitle.UNSTYLED,
+                    text = "",
+                ),
+                BlockDescription(
+                    type = TypeOfTitle.HEADER_ONE,
+                    text = "Это заголовок 1",
+                ),
+                BlockDescription(
+                    type = TypeOfTitle.HEADER_ONE,
+                    text = "Это заголовок 1",
+                ),
+                BlockDescription(
+                    type = TypeOfTitle.HEADER_ONE,
+                    text = "",
+                ),
+                BlockDescription(
+                    type = TypeOfTitle.HEADER_TWO,
+                    text = "Это заголовок 2",
+                ),
+            ),
+            type = TypeOfBlocks.TEXT,
+            startRange = 1,
+            endRange = 10,
+            selectedValue = 1,
+            blockIsValid = true,
+        )
+    )
+    val state = QuestionsState(
+        blocks = blocks
     )
     InTouchTheme {
         QuestionsScreen(
