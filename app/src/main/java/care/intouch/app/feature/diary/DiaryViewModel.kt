@@ -8,12 +8,11 @@ import care.intouch.app.feature.diary.domain.modal.Diary
 import care.intouch.app.feature.diary.domain.useCase.DeleteDiaryUC
 import care.intouch.app.feature.diary.domain.useCase.GetDiariesUC
 import care.intouch.app.feature.diary.domain.useCase.SwitchVisibleUC
+import care.intouch.app.feature.diary.presentation.ui.mapperToDiaryEntry
 import care.intouch.app.feature.diary.presentation.ui.models.DiaryChangeEvent
 import care.intouch.app.feature.diary.presentation.ui.models.DiaryDataState
-import care.intouch.app.feature.diary.presentation.ui.models.DiaryEntry
 import care.intouch.app.feature.diary.presentation.ui.models.DiaryPopUp
 import care.intouch.app.feature.diary.presentation.ui.models.DiaryUiState
-import care.intouch.app.feature.diary.presentation.ui.models.Mood
 import care.intouch.uikit.common.StringVO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -25,9 +24,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 import javax.inject.Inject
 
 
@@ -97,7 +93,6 @@ class DiaryViewModel @Inject constructor(
     private fun handleDeleteDiaryEntry(index: Int, id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             when (deleteDiaryUC.invoke(id)) {
-                is Resource.Error -> {}
 
                 is Resource.Success -> {
                     val newDiaryList = getState().noteList.toMutableList()
@@ -106,6 +101,9 @@ class DiaryViewModel @Inject constructor(
                         it.copy(noteList = newDiaryList)
                     }
                 }
+
+                is Resource.Error -> {}
+
             }
         }
     }
@@ -113,8 +111,6 @@ class DiaryViewModel @Inject constructor(
     private fun onShareToggle(index: Int, isShared: Boolean, id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             when (val result = switchVisibleUC.invoke(id)) {
-                is Resource.Error -> {
-                }
 
                 is Resource.Success -> {
                     val shareNote = getState()
@@ -125,7 +121,9 @@ class DiaryViewModel @Inject constructor(
                     _diaryDataState.update { state ->
                         state.copy(noteList = diaryList)
                     }
+                }
 
+                is Resource.Error -> {
                 }
             }
         }
@@ -162,35 +160,11 @@ class DiaryViewModel @Inject constructor(
         }
     }
 
-    private fun mapperToDiaryEntry(diary: Diary): DiaryEntry {
-        val inputDateFormat =
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.getDefault())
-        val date = inputDateFormat.parse(diary.addDate)
-        val calendar = Calendar.getInstance().apply { time = date }
-        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
-        val month = monthFormat.format(date).lowercase(Locale.ROOT)
-        val day = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH))
-
-        return DiaryEntry(
-            id = diary.id,
-            data = "$month $day",
-            note = diary.eventDetails,
-            moodList = diary.clarifyingEmotion.map {
-                Mood(it)
-            },
-            sharedWithDoc = diary.visible
-        )
-    }
 
     private fun loadDiaryData() {
         viewModelScope.launch(Dispatchers.IO) {
             getDiariesUC.invoke().collect { result ->
                 when (result) {
-                    is Resource.Error -> {
-                        _diaryDataState.update {
-                            it.copy(noteList = emptyList())
-                        }
-                    }
 
                     is Resource.Success -> {
                         _diaryDataState.update {
@@ -199,6 +173,13 @@ class DiaryViewModel @Inject constructor(
                             })
                         }
                     }
+
+                    is Resource.Error -> {
+                        _diaryDataState.update {
+                            it.copy(noteList = emptyList())
+                        }
+                    }
+
                 }
             }
         }
