@@ -34,7 +34,7 @@ import care.intouch.uikit.ui.screens.my_plan.my_plan.PlanHeader
 
 @Composable
 fun PlanScreen(
-    onTaskListItemClick: () -> Unit,
+    onTaskListItemClick: (Int) -> Unit,
     onBackArrowClick: () -> Unit
 ) {
     val viewModel: PlanScreenViewModel = hiltViewModel()
@@ -54,7 +54,7 @@ fun PlanScreen(
 fun PlanScreen(
     state: PlanScreenState,
     onEvent: (PlanScreenEvent) -> Unit,
-    onTaskListItemClick: () -> Unit,
+    onTaskListItemClick: (Int) -> Unit,
     onBackArrowClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -124,6 +124,9 @@ fun PlanScreen(
                         chipText = assignment.status.value,
                         text = assignment.title,
                         dateText = assignment.date,
+                        onCardHolderClick = {
+                            onTaskListItemClick.invoke(assignment.id)
+                        },
                         onDuplicateMenuItemClick = {
                             Toast.makeText(
                                 context,

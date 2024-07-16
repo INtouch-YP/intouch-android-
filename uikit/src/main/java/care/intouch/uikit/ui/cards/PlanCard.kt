@@ -64,7 +64,8 @@ fun PlanCard(
     dropdownMenuItemTextColor: Color = InTouchTheme.colors.textBlue.copy(alpha = 0.5f),
     dropdownMenuItemTextStyle: TextStyle = InTouchTheme.typography.caption2Semibold,
     dropdownMenuItemColorSelect: Color = InTouchTheme.colors.accentGreen30,
-    onClickToggle: (Boolean) -> Unit
+    onClickToggle: (Boolean) -> Unit,
+    onPlanCardClick: () -> Unit = {}
 ) {
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -160,7 +161,9 @@ fun PlanCard(
             }
         }
         Image(
-            modifier = Modifier.fillMaxHeight(0.62f),
+            modifier = Modifier
+                .fillMaxHeight(0.62f)
+                .clickable { onPlanCardClick.invoke() },
             painter = painterResource(R.drawable.illustration_plan_card),
             contentDescription = "illustration plan card"
         )

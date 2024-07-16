@@ -2,10 +2,11 @@ package care.intouch.app.core.navigation.navhost
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navigation
+import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
 import care.intouch.app.core.navigation.AppNavScreen
-import care.intouch.app.core.navigation.MainNav
 import care.intouch.app.core.navigation.Plan
 import care.intouch.app.core.navigation.PlanBottomNav
 import care.intouch.app.core.navigation.PlanRouteBranch
@@ -22,10 +23,13 @@ fun NavGraphBuilder.addNestedPlanGraph(
     navigation(
         startDestination = TaskIntroduction.route,
         route = PlanRouteBranch.route,
+        arguments = listOf(navArgument("itemId") { type = NavType.IntType })
     ) {
 
-        composable(route = TaskIntroduction.route) {
+        composable(route = TaskIntroduction.route) { backStackEntry ->
+            val itemId = backStackEntry.arguments?.getInt("itemId")
             TaskIntroductionScreen(
+                itemId = itemId,
                 onNextClick = {
                     navController.navigate(route = TaskCompleting.route)
                 }

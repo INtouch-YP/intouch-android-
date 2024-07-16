@@ -46,8 +46,8 @@ fun AppNavHost(
 
         composable(route = Plan.route) {
             PlanScreen(
-                onTaskListItemClick = {
-                    navController.navigate(route = PlanRouteBranch.route)
+                onTaskListItemClick = { itemId ->
+                    navController.navigate(route = PlanRouteBranch.createRoute(itemId))
                 },
                 onBackArrowClick = {
                     navController.navigate(route = Home.route)
