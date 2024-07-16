@@ -9,9 +9,6 @@ import care.intouch.app.feature.diary.data.api.DiaryApiService
 import care.intouch.app.feature.diary.data.modals.Request
 import care.intouch.app.feature.diary.data.modals.toDiary
 import care.intouch.app.feature.diary.domain.modal.Diary
-import care.intouch.app.feature.diary.presentation.ui.EmotionScreens.models.EmotionDesc
-import care.intouch.app.feature.diary.presentation.ui.EmotionScreens.models.EmotionDescriptionEnum
-import care.intouch.app.feature.diary.presentation.ui.EmotionScreens.models.EmotionDescriptionTask
 import care.intouch.app.feature.diary.presentation.ui.emotionScreen.models.EmotionDesc
 import care.intouch.app.feature.diary.presentation.ui.emotionScreen.models.EmotionDescriptionEnum
 import care.intouch.app.feature.diary.presentation.ui.emotionScreen.models.EmotionDescriptionTask
@@ -74,7 +71,7 @@ class EmotionsRepositoryImpl @Inject constructor(
         api.saveDiary(mapperToRequest(diary))
     }
 
-    private fun mapperToRequest(diary: Diary) = Request (
+    private fun mapperToRequest(diary: Diary) = Request(
         clarifyingEmotion = diary.clarifyingEmotion,
         eventDetails = diary.eventDetails,
         primaryEmotion = diary.primaryEmotion,

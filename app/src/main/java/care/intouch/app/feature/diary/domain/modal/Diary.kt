@@ -3,7 +3,7 @@ package care.intouch.app.feature.diary.domain.modal
 
 data class Diary(
     val id: Int = 0,
-    val addDate: String? = null,
+    val addDate: String = "",
     val clarifyingEmotion: List<String>,
     val eventDetails: String,
     val primaryEmotion: String,

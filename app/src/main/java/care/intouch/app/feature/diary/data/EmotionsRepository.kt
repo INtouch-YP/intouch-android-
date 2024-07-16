@@ -3,13 +3,10 @@ package care.intouch.app.feature.diary.data
 import care.intouch.app.feature.common.Resource
 import care.intouch.app.feature.common.domain.errors.ErrorEntity
 import care.intouch.app.feature.diary.domain.modal.Diary
-import care.intouch.app.feature.diary.presentation.ui.EmotionScreens.models.EmotionDesc
-import care.intouch.app.feature.diary.presentation.ui.EmotionScreens.models.EmotionDescriptionEnum
-import care.intouch.app.feature.diary.presentation.ui.EmotionScreens.models.EmotionDescriptionTask
-import kotlinx.coroutines.flow.Flow
 import care.intouch.app.feature.diary.presentation.ui.emotionScreen.models.EmotionDesc
 import care.intouch.app.feature.diary.presentation.ui.emotionScreen.models.EmotionDescriptionEnum
 import care.intouch.app.feature.diary.presentation.ui.emotionScreen.models.EmotionDescriptionTask
+import kotlinx.coroutines.flow.Flow
 
 interface EmotionsRepository {
     suspend fun saveEmotion(emotionDesc: EmotionDesc)

@@ -10,14 +10,11 @@ import care.intouch.app.feature.diary.domain.useCase.GetEmotionUC
 import care.intouch.app.feature.diary.domain.useCase.GetSavedAnswers
 import care.intouch.app.feature.diary.domain.useCase.SaveAnswersUC
 import care.intouch.app.feature.diary.domain.useCase.SaveDiaryUC
-import care.intouch.app.feature.diary.presentation.ui.EmotionScreens.models.EmotionDescriptionEnum
-import care.intouch.app.feature.diary.presentation.ui.EmotionScreens.models.EmotionDescriptionTask
 import care.intouch.app.feature.diary.presentation.ui.emotionScreen.models.EmotionDescriptionTask
 import care.intouch.app.feature.diary.presentation.ui.fillingOutScreen.getEmotionDesc
 import care.intouch.app.feature.diary.presentation.ui.fillingOutScreen.models.FillingOutDataEvent
 import care.intouch.app.feature.diary.presentation.ui.fillingOutScreen.models.FillingOutScreenState
 import care.intouch.uikit.common.ImageVO
-import care.intouch.uikit.common.StringVO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -54,6 +51,7 @@ class FillingOutViewModel @Inject constructor(
         getEmotion()
         getSavedAnswers()
     }
+
     fun onEvent(event: FillingOutDataEvent) {
         when (event) {
             is FillingOutDataEvent.OnAnalysisTextChanged -> updateAnalysisState(event.text)
@@ -68,7 +66,7 @@ class FillingOutViewModel @Inject constructor(
         }
     }
 
-    private fun saveDiary(){
+    private fun saveDiary() {
         viewModelScope.launch(Dispatchers.IO) {
             saveDiaryUC.invoke(
                 Diary(
@@ -103,6 +101,7 @@ class FillingOutViewModel @Inject constructor(
             _sharedNavigateState.emit(true)
         }
     }
+
     private fun updateStates() {
         getEmotion()
         getEmotionDescription()
@@ -160,6 +159,7 @@ class FillingOutViewModel @Inject constructor(
             _sharedListUiState.emit(result)
         }
     }
+
     private fun updateDetailsState(text: String) {
         _uiState.update {
             it.copy(detailsText = text)
@@ -184,7 +184,7 @@ class FillingOutViewModel @Inject constructor(
         }
     }
 
-    private fun changeVisible(){
+    private fun changeVisible() {
         _uiState.update {
             it.copy(visible = !it.visible)
         }

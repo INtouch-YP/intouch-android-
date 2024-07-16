@@ -1,6 +1,5 @@
 package care.intouch.app.feature.diary
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import care.intouch.app.R
@@ -8,7 +7,6 @@ import care.intouch.app.feature.common.Resource
 import care.intouch.app.feature.diary.domain.modal.Diary
 import care.intouch.app.feature.diary.domain.useCase.DeleteDiaryUC
 import care.intouch.app.feature.diary.domain.useCase.GetDiariesUC
-import care.intouch.app.feature.diary.domain.useCase.SaveDiaryUC
 import care.intouch.app.feature.diary.domain.useCase.SwitchVisibleUC
 import care.intouch.app.feature.diary.presentation.ui.models.DiaryChangeEvent
 import care.intouch.app.feature.diary.presentation.ui.models.DiaryDataState
@@ -76,7 +74,7 @@ class DiaryViewModel @Inject constructor(
 
             is DiaryChangeEvent.IntentionToDelete -> {
                 showDeletePopup(
-                    index = event.index.dec(),
+                    index = event.index,
                     id = event.idToDelete
                 )
             }
@@ -98,9 +96,8 @@ class DiaryViewModel @Inject constructor(
 
     private fun handleDeleteDiaryEntry(index: Int, id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            when (val result = deleteDiaryUC.invoke(id)) {
-                is Resource.Error -> {
-                }
+            when (deleteDiaryUC.invoke(id)) {
+                is Resource.Error -> {}
 
                 is Resource.Success -> {
                     val newDiaryList = getState().noteList.toMutableList()
@@ -111,11 +108,9 @@ class DiaryViewModel @Inject constructor(
                 }
             }
         }
-
     }
 
     private fun onShareToggle(index: Int, isShared: Boolean, id: Int) {
-
         viewModelScope.launch(Dispatchers.IO) {
             when (val result = switchVisibleUC.invoke(id)) {
                 is Resource.Error -> {
@@ -206,44 +201,6 @@ class DiaryViewModel @Inject constructor(
                     }
                 }
             }
-//            _diaryDataState.update {
-//                it.copy(repository.getDiaries())
-//            }
-        }
-
-//        val count = kotlin.random.Random.nextInt(1, 6)
-//        val entries = generateRandomDiaryEntries(count)
-//        _diaryDataState.update {
-//            it.copy(noteList = entries)
-//        }
-    }
-
-    private fun generateRandomDiaryEntries(count: Int): List<DiaryEntry> {
-        val random = kotlin.random.Random
-        val moods = listOf(
-            Mood(name = "bad"),
-            Mood(name = "Sad"),
-            Mood(name = "Angry"),
-            Mood(name = "Excited")
-        )
-        val notes =
-            listOf(
-                "Went for a walk",
-                "Had a great meal",
-                "Felt stressed",
-                "Met with friends",
-                "Thers once was a ship that put to see and the name"
-            )
-        val month = listOf("jan", "mar", "oct", "nov")
-
-        return List(count) { _ ->
-            DiaryEntry(
-                id = random.nextInt(100),
-                data = "${random.nextInt(31)} ${month[random.nextInt(month.size)]}",
-                note = notes[random.nextInt(notes.size)],
-                moodList = moods,
-                sharedWithDoc = random.nextBoolean(),
-            )
         }
     }
 }
