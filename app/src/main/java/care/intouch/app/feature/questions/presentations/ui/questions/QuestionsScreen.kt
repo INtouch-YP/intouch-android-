@@ -22,9 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -36,7 +33,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import care.intouch.app.R
+import care.intouch.app.feature.questions.domain.models.AssignmentsChoiceReplies
+import care.intouch.app.feature.questions.domain.models.BlockDescription
 import care.intouch.app.feature.questions.domain.models.TypeOfBlocks
+import care.intouch.app.feature.questions.domain.models.TypeOfTitle
+import care.intouch.app.feature.questions.presentations.ui.models.QuestionEvent
 import care.intouch.app.feature.questions.presentations.ui.models.QuestionsBlock
 import care.intouch.app.feature.questions.presentations.ui.models.QuestionsState
 import care.intouch.uikit.common.StringVO
@@ -51,9 +52,6 @@ import care.intouch.uikit.ui.questions.TextFieldWithSliderAndDigits
 import care.intouch.uikit.ui.textFields.MultilineTextField
 import care.intouch.uikit.ui.toggle.Toggle
 import coil.compose.AsyncImage
-import care.intouch.app.feature.questions.domain.models.BlockDescription
-import care.intouch.app.feature.questions.domain.models.TypeOfTitle
-import care.intouch.app.feature.questions.presentations.ui.models.QuestionEvent
 
 @Composable
 fun QuestionsScreen(
@@ -71,7 +69,6 @@ fun QuestionsScreen(
         },
         state = state
     )
-
 }
 
 @Composable
@@ -82,20 +79,7 @@ private fun QuestionsScreen(
     state: QuestionsState
 ) {
 
-    //var answerText by remember { mutableStateOf("") }
     val systemKeyboardController = LocalSoftwareKeyboardController.current
-    var isCheckedToggle by remember {
-        mutableStateOf(false)
-    }
-    var isShowClosingDialog by remember {
-        mutableStateOf(false)
-    }
-    var isShowCompleteTaskDialog by remember {
-        mutableStateOf(false)
-    }
-    var currentSliderPosition by remember {
-        mutableStateOf(0)
-    }
 
     Box(
         modifier = Modifier
@@ -103,10 +87,10 @@ private fun QuestionsScreen(
             .verticalScroll(rememberScrollState())
             .clickable {
                 systemKeyboardController?.hide()
-                isShowClosingDialog = false
-                isShowCompleteTaskDialog = false
+                onEvent(QuestionEvent.OnShowClosingDialog(false))
+                onEvent(QuestionEvent.OnShowCompleteTaskDialog(false))
             }
-            .alpha(if (isShowClosingDialog) 0.2f else 1f)
+            .alpha(if (state.isShowClosingDialog) 0.2f else 1f)
     ) {
         Column (
             modifier = Modifier
@@ -117,7 +101,7 @@ private fun QuestionsScreen(
             Spacer(modifier = Modifier.height(8.dp))
             TopBarArcButton(
                 onClick = {
-                    isShowClosingDialog = true
+                    onEvent(QuestionEvent.OnShowClosingDialog(true))
                 },
                 enabled = true,
                 modifier = Modifier.align(Alignment.End)
@@ -140,7 +124,7 @@ private fun QuestionsScreen(
                                    type = TypeOfBlocks.OPEN,
                                ))
                            },
-                           isError = if (isShowCompleteTaskDialog && block.reply.isBlank()) true else false,
+                           isError = block.blockIsValid,
                            enabled = true,
                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                            keyboardActions = KeyboardActions(onDone = {
@@ -151,28 +135,44 @@ private fun QuestionsScreen(
                    }
 
                     TypeOfBlocks.SINGLE -> {
-                        val replyTextList: MutableList<String> = mutableListOf()
+                        val replyTextList: MutableList<Pair<String,Int>> = mutableListOf()
                         block.choiceReplies?.forEach {
-                            replyTextList.add(it.reply)
+                            replyTextList.add(Pair(it.reply, it.id))
                         }
                         TextFieldWithCheckbox(
                             modifier = Modifier.fillMaxWidth(),
                             subtitleText = StringVO.Plain(block.question),
-                            listOfChoiceReplise = replyTextList
+                            listOfChoiceReplise = replyTextList,
+                            onClick = {
+                                val choiceRepliesList = updateSingleChoiceReplies(block.choiceReplies!!, it)
+                                onEvent(QuestionEvent.OnBlockChange(
+                                    id = block.id,
+                                    choiceReplies = choiceRepliesList,
+                                    type = TypeOfBlocks.SINGLE,
+                                ))
+                            }
                         )
                         Spacer(modifier = Modifier.height( if (state.blocks.size - 1 == index) 34.dp else 40.dp))
                     }
 
                     TypeOfBlocks.MULTIPLE -> {
-                        val replyTextList: MutableList<String> = mutableListOf()
+                        val replyTextList: MutableList<Pair<String,Int>> = mutableListOf()
                         block.choiceReplies?.forEach {
-                            replyTextList.add(it.reply)
+                            replyTextList.add(Pair(it.reply, it.id))
                         }
                         TextFieldWithCheckmars(
                             modifier = Modifier.fillMaxWidth(),
                             subtitleText = StringVO.Plain(block.question),
                             captionText = StringVO.Resource(R.string.inscribe_professional_development_question),
-                            listOfChoiceReplise = replyTextList
+                            listOfChoiceReplise = replyTextList,
+                            onClick = {
+                                val choiceRepliesList = updateMultipleChoiceReplies(block.choiceReplies!!, it)
+                                onEvent(QuestionEvent.OnBlockChange(
+                                    id = block.id,
+                                    choiceReplies = choiceRepliesList,
+                                    type = TypeOfBlocks.SINGLE,
+                                ))
+                            }
                         )
                         Spacer(modifier = Modifier.height( if (state.blocks.size - 1 == index) 34.dp else 40.dp))
                     }
@@ -181,10 +181,14 @@ private fun QuestionsScreen(
                         TextFieldWithSliderAndDigits(
                             subtitleText = StringVO.Plain(block.question),
                             modifier = Modifier.fillMaxWidth(),
-                            onValueChange = { value ->
-                                currentSliderPosition = value
+                            onValueChange = {
+                                onEvent(QuestionEvent.OnBlockChange(
+                                    id = block.id,
+                                    selectedValue = it,
+                                    type = TypeOfBlocks.RANGE,
+                                ))
                             },
-                            isError = if (currentSliderPosition == 0 && isShowCompleteTaskDialog) true else false,
+                            isError = block.blockIsValid,
                             leftEvaluateText = StringVO.Plain(block.leftPole),
                             rightEvaluateText = StringVO.Plain(block.rightPole)
                         )
@@ -250,18 +254,18 @@ private fun QuestionsScreen(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Toggle(
-                    isChecked = isCheckedToggle,
+                    isChecked = state.isCheckedToggle,
                     onChange = {
-                        isCheckedToggle = !isCheckedToggle
+                        onEvent(QuestionEvent.OnCheckedToggle(!state.isCheckedToggle))
                     }
                 )
             }
             Spacer(modifier = Modifier.height(36.dp))
             IntouchButton(
                 onClick = {
-                    isShowCompleteTaskDialog = true
+                    onEvent(QuestionEvent.OnShowCompleteTaskDialog(true))
                 },
-                isEnabled = if (isShowCompleteTaskDialog) false else true,
+                isEnabled = if (state.isShowCompleteTaskDialog) false else true,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 text = StringVO.Resource(R.string.complete_task),
                 contentPadding = PaddingValues(horizontal = 51.dp, vertical = 13.dp)
@@ -269,7 +273,7 @@ private fun QuestionsScreen(
             Spacer(modifier = Modifier.height(40.dp))
         }
         }
-    if (isShowClosingDialog) {
+    if (state.isShowClosingDialog) {
         Surface(
             modifier = Modifier
                 .padding(horizontal = 28.dp)
@@ -282,7 +286,7 @@ private fun QuestionsScreen(
                     inTouchButtonClick = {
                     },
                     secondaryButtonClick = {
-                        isShowClosingDialog = !isShowClosingDialog
+                        onEvent(QuestionEvent.OnShowClosingDialog(false))
                     },
                     firstLineText = StringVO.Resource(R.string.questions_popap_closing_task_first_line),
                     secondLineText = StringVO.Resource(R.string.questions_popup_closing_task_second_line),
@@ -291,7 +295,7 @@ private fun QuestionsScreen(
             }
         )
     }
-    if (isShowCompleteTaskDialog) {
+    if (state.isShowCompleteTaskDialog) {
         Surface(
             modifier = Modifier
                 .padding(horizontal = 28.dp)
@@ -303,7 +307,7 @@ private fun QuestionsScreen(
                 Column {
                     PopupQuestions(
                         inTouchButtonClick = {
-                            isShowCompleteTaskDialog = !isShowCompleteTaskDialog
+                            onEvent(QuestionEvent.OnShowCompleteTaskDialog(false))
                         },
                         secondaryButtonClick = {
 
@@ -315,6 +319,36 @@ private fun QuestionsScreen(
                 }
         )
     }
+}
+
+private fun updateSingleChoiceReplies(list: List<AssignmentsChoiceReplies>, id: Int): List<AssignmentsChoiceReplies> {
+    val result: MutableList<AssignmentsChoiceReplies> = mutableListOf()
+    list.forEach {
+        if(it.id == id) {
+            result.add(it.copy(
+                checked = true
+            ))
+        } else {
+            result.add(it.copy(
+                checked = false
+            ))
+        }
+    }
+    return result
+}
+
+private fun updateMultipleChoiceReplies(list: List<AssignmentsChoiceReplies>, id: Int): List<AssignmentsChoiceReplies> {
+    val result: MutableList<AssignmentsChoiceReplies> = mutableListOf()
+    list.forEach {
+        if(it.id == id) {
+            result.add(it.copy(
+                checked = !it.checked
+            ))
+        } else {
+            result.add(it)
+        }
+    }
+    return result
 }
 
 @Preview(showBackground = true, heightDp = 1960)

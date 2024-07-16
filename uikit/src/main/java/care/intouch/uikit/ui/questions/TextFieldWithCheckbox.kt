@@ -31,12 +31,13 @@ import care.intouch.uikit.ui.textFields.MultilineTextFieldDefaults.TextPadding
 @Composable
 fun TextFieldWithCheckbox(
     modifier: Modifier = Modifier,
+    onClick: (Int) -> Unit,
     titleText: StringVO = StringVO.Plain(BLANC_STRING),
     subtitleText: StringVO = StringVO.Plain(BLANC_STRING),
     captionText: StringVO = StringVO.Plain(BLANC_STRING),
     textPadding: Dp = TextPadding,
     backgroundColor: Color = InTouchTheme.colors.input85,
-    listOfChoiceReplise: MutableList<String> = mutableListOf()
+    listOfChoiceReplise: MutableList<Pair<String, Int>> = mutableListOf()
 ) {
     val (selected, setSelected) = remember { mutableStateOf(listOfChoiceReplise[0]) }
 
@@ -98,10 +99,11 @@ fun TextFieldWithCheckbox(
                     Spacer(modifier = Modifier.height(10.dp))
                     Checkbox(
                         isChecked = selected == item,
-                        text = item,
+                        text = item.first,
                         modifier = Modifier.padding(start = 24.dp, end = 22.dp),
                         onClick = {
                             setSelected(item)
+                            onClick(item.second)
                         }
                     )
                 }
@@ -114,14 +116,18 @@ fun TextFieldWithCheckbox(
 @Preview(showBackground = true)
 @Composable
 fun TextFieldWithCheckboxPreview() {
-    val items = mutableListOf("Первый", "Второй")
+    val items = mutableListOf(
+        Pair("Первый", 1),
+        Pair("Второй", 2),
+        Pair("Третий", 3))
     InTouchTheme {
         TextFieldWithCheckbox(
             titleText = StringVO.Plain("Title small "),
             subtitleText = StringVO.Plain("Body semi bold "),
             captionText = StringVO.Plain("Caption "),
             modifier = Modifier.padding(45.dp),
-            listOfChoiceReplise = items
+            listOfChoiceReplise = items,
+            onClick = {}
         )
     }
 }
