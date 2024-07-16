@@ -124,7 +124,7 @@ private fun QuestionsScreen(
                                    type = TypeOfBlocks.OPEN,
                                ))
                            },
-                           isError = block.blockIsValid,
+                           isError = block.answerNotSpecified,
                            enabled = true,
                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                            keyboardActions = KeyboardActions(onDone = {
@@ -188,7 +188,7 @@ private fun QuestionsScreen(
                                     type = TypeOfBlocks.RANGE,
                                 ))
                             },
-                            isError = block.blockIsValid,
+                            isError = block.answerNotSpecified,
                             leftEvaluateText = StringVO.Plain(block.leftPole),
                             rightEvaluateText = StringVO.Plain(block.rightPole)
                         )
@@ -393,7 +393,7 @@ fun QuestionsScreenPreview() {
             startRange = 1,
             endRange = 10,
             selectedValue = 1,
-            blockIsValid = true,
+            answerNotSpecified = true,
         )
     )
     val state = QuestionsState(

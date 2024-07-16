@@ -88,7 +88,7 @@ class QuestionsViewModel @Inject constructor(
                     startRange = it.startRange,
                     endRange = it.endRange,
                     selectedValue = 1,
-                    blockIsValid = true     // ставлю true  чтоб поле не отрисовывалось красным при изначальной отрисовке экрана
+                    answerNotSpecified = false     // ставлю true  чтоб поле не отрисовывалось красным при изначальной отрисовке экрана
                 )                           // blockIsValid будет проверяться только при нажатии кнопки на отправку.
                 // Вот функция для этого checkTheValidityOfBlocks()
             )
@@ -111,7 +111,7 @@ class QuestionsViewModel @Inject constructor(
                 TypeOfBlocks.OPEN -> {
                     if(it.reply.isEmpty()) {
                         result.add(it.copy(
-                            blockIsValid = false
+                            answerNotSpecified = true
                         ))
                     } else {
                         result.add(it)
@@ -130,7 +130,7 @@ class QuestionsViewModel @Inject constructor(
                         result.add(it)
                     } else {
                         result.add(it.copy(
-                            blockIsValid = false
+                            answerNotSpecified = true
                         ))
                     }
                 }
