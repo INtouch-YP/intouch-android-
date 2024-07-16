@@ -164,7 +164,6 @@ class DiaryViewModel @Inject constructor(
                 is Resource.Error -> TODO()
             }
         }
-
     }
 
 
