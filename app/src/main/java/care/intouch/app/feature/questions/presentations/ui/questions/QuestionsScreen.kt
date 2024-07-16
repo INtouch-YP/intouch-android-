@@ -32,7 +32,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -218,9 +217,9 @@ private fun QuestionsScreen(
                                 Spacer(modifier = Modifier.height(12.dp))
                                 AsyncImage(
                                     model = block.image,
-                                    placeholder = painterResource(id = care.intouch.uikit.R.drawable.dunning_kruger_effect_image),
-                                    contentDescription = "task image on introductory questions screen",
-                                    contentScale = ContentScale.Crop
+                                    contentDescription = "task image on questions screen",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
                                 )
                             }
                         }
@@ -291,7 +290,7 @@ private fun QuestionsScreen(
                 .padding(horizontal = 28.dp)
                 .wrapContentHeight(Alignment.CenterVertically)
                 .alpha(1F)
-                .padding(bottom = 195.dp)
+                .padding(top = 100.dp)
                 .clip(RoundedCornerShape(20.dp)),
             content = {
                 Column {
