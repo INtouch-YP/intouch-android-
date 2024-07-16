@@ -24,8 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import care.intouch.app.R
-import care.intouch.app.feature.diary.presentation.ui.EmotionScreens.ResultEmotionDescriptionList
-import care.intouch.app.feature.diary.presentation.ui.EmotionScreens.models.EmotionDescriptionTask
+import care.intouch.app.feature.diary.presentation.ui.emotionScreen.ResultEmotionDescriptionList
+import care.intouch.app.feature.diary.presentation.ui.emotionScreen.models.EmotionDescriptionTask
 import care.intouch.app.feature.diary.presentation.ui.fillingOutScreen.models.FillingOutDataEvent
 import care.intouch.app.feature.diary.presentation.ui.fillingOutScreen.models.FillingOutScreenState
 import care.intouch.app.feature.diary.presentation.ui.fillingOutScreen.viewModel.FillingOutViewModel
@@ -61,7 +61,6 @@ fun FillingOutScreen(
         onSaveClick = onSaveClick
     )
 }
-
 @Composable
 fun FillingOutScreen(
     onNextClick: () -> Unit,
@@ -98,7 +97,7 @@ fun FillingOutScreen(
                 enabled = true,
                 modifier = Modifier
                     .align(Alignment.End)
-                    .padding(top = 28.dp)
+                    .padding(top = 8.dp)
             )
             Spacer(modifier = Modifier.height(28.dp))
             MultilineTextField(

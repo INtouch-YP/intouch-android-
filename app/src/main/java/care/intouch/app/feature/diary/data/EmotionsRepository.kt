@@ -7,6 +7,9 @@ import care.intouch.app.feature.diary.presentation.ui.EmotionScreens.models.Emot
 import care.intouch.app.feature.diary.presentation.ui.EmotionScreens.models.EmotionDescriptionEnum
 import care.intouch.app.feature.diary.presentation.ui.EmotionScreens.models.EmotionDescriptionTask
 import kotlinx.coroutines.flow.Flow
+import care.intouch.app.feature.diary.presentation.ui.emotionScreen.models.EmotionDesc
+import care.intouch.app.feature.diary.presentation.ui.emotionScreen.models.EmotionDescriptionEnum
+import care.intouch.app.feature.diary.presentation.ui.emotionScreen.models.EmotionDescriptionTask
 
 interface EmotionsRepository {
     suspend fun saveEmotion(emotionDesc: EmotionDesc)

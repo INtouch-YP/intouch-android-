@@ -1,7 +1,7 @@
 package care.intouch.app.feature.diary.domain.useCase
 
 import care.intouch.app.feature.diary.data.EmotionsRepository
-import care.intouch.app.feature.diary.presentation.ui.EmotionScreens.models.EmotionDescriptionTask
+import care.intouch.app.feature.diary.presentation.ui.emotionScreen.models.EmotionDescriptionTask
 import javax.inject.Inject
 
 interface SaveEmotionDescUC {
