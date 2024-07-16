@@ -13,8 +13,6 @@ import care.intouch.app.feature.diary.presentation.ui.emotionScreen.models.Emoti
 import care.intouch.app.feature.diary.presentation.ui.emotionScreen.models.EmotionDescriptionEnum
 import care.intouch.app.feature.diary.presentation.ui.emotionScreen.models.EmotionDescriptionTask
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -24,7 +22,7 @@ class EmotionsRepositoryImpl @Inject constructor(
     private val sharedPreferences: SharedPreferences,
     private val json: Json,
     private val api: DiaryApiService,
-    private val exceptionToErrorMapper: UserExceptionToErrorMapper
+    private val exceptionToErrorMapper: UserExceptionToErrorMapper,
 ) : EmotionsRepository {
     override suspend fun saveEmotion(emotionDesc: EmotionDesc) {
         withContext(Dispatchers.IO) {
@@ -81,11 +79,11 @@ class EmotionsRepositoryImpl @Inject constructor(
         emotionType = diary.emotionType
     )
 
-    override suspend fun getDiaries(): Flow<Resource<List<Diary>, ErrorEntity>> = flow {
-        try {
-            emit(Resource.Success(api.getDiaries().diaryDTOS.map { it.toDiary() }))
+    override suspend fun getDiaries(): Resource<List<Diary>, ErrorEntity> {
+        return try {
+            (Resource.Success(api.getDiaries().diaryDTOS.map { it.toDiary() }))
         } catch (e: Exception) {
-            emit(Resource.Error(exceptionToErrorMapper.handleException(e)))
+            (Resource.Error(exceptionToErrorMapper.handleException(e)))
         }
     }
 

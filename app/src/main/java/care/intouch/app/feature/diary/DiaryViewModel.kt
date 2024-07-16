@@ -3,6 +3,7 @@ package care.intouch.app.feature.diary
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import care.intouch.app.R
+import care.intouch.app.feature.authorization.domain.useCase.GetUserFullNameUseCase
 import care.intouch.app.feature.common.Resource
 import care.intouch.app.feature.diary.domain.modal.Diary
 import care.intouch.app.feature.diary.domain.useCase.DeleteDiaryUC
@@ -32,6 +33,7 @@ class DiaryViewModel @Inject constructor(
     private val getDiariesUC: GetDiariesUC,
     private val deleteDiaryUC: DeleteDiaryUC,
     private val switchVisibleUC: SwitchVisibleUC,
+    private val getUserFullNameUseCase: GetUserFullNameUseCase
 ) : ViewModel() {
     private val _diaryUIState = MutableStateFlow(DiaryUiState())
     val diaryUIState: StateFlow<DiaryUiState> = _diaryUIState.asStateFlow()
@@ -152,35 +154,38 @@ class DiaryViewModel @Inject constructor(
     }
 
     private fun setUserName() {
-        val name = buildString {
-            append("Bober Jan")
+        viewModelScope.launch(Dispatchers.IO) {
+            when(val result = getUserFullNameUseCase.invoke()){
+                is Resource.Success -> {
+                    _diaryUIState.update {
+                        it.copy(userName = result.data)
+                    }
+                }
+                is Resource.Error -> TODO()
+            }
         }
-        _diaryUIState.update {
-            it.copy(userName = name)
-        }
+
     }
 
 
     private fun loadDiaryData() {
         viewModelScope.launch(Dispatchers.IO) {
-            getDiariesUC.invoke().collect { result ->
-                when (result) {
+            when (val result = getDiariesUC.invoke()) {
 
-                    is Resource.Success -> {
-                        _diaryDataState.update {
-                            it.copy(noteList = result.data.map { diary: Diary ->
-                                mapperToDiaryEntry(diary)
-                            })
-                        }
+                is Resource.Success -> {
+                    _diaryDataState.update {
+                        it.copy(noteList = result.data.map { diary: Diary ->
+                            mapperToDiaryEntry(diary)
+                        })
                     }
-
-                    is Resource.Error -> {
-                        _diaryDataState.update {
-                            it.copy(noteList = emptyList())
-                        }
-                    }
-
                 }
+
+                is Resource.Error -> {
+                    _diaryDataState.update {
+                        it.copy(noteList = emptyList())
+                    }
+                }
+
             }
         }
     }

@@ -8,11 +8,11 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 interface GetDiariesUC {
-    suspend operator fun invoke(): Flow<Resource<List<Diary>, ErrorEntity>>
+    suspend operator fun invoke(): Resource<List<Diary>, ErrorEntity>
     class Base @Inject constructor(
         private val emotionsRepository: EmotionsRepository,
     ) : GetDiariesUC {
-        override suspend fun invoke(): Flow<Resource<List<Diary>, ErrorEntity>> {
+        override suspend fun invoke(): Resource<List<Diary>, ErrorEntity> {
            return emotionsRepository.getDiaries()
         }
     }

@@ -19,7 +19,7 @@ interface EmotionsRepository {
     suspend fun getSavedAnswers(): List<String>
 
     suspend fun saveDiary(diary: Diary)
-    suspend fun getDiaries(): Flow<Resource<List<Diary>, ErrorEntity>>
+    suspend fun getDiaries(): Resource<List<Diary>, ErrorEntity>
     suspend fun deleteDiary(id: Int): Resource<Boolean, ErrorEntity>
     suspend fun switchVisible(id: Int): Resource<Boolean, ErrorEntity>
 }
