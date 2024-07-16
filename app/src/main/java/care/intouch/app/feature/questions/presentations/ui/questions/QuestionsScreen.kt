@@ -90,7 +90,7 @@ private fun QuestionsScreen(
                 onEvent(QuestionEvent.OnShowClosingDialog(false))
                 onEvent(QuestionEvent.OnShowCompleteTaskDialog(false))
             }
-            .alpha(if (state.isShowClosingDialog) 0.2f else 1f)
+            .alpha(if (state.isShowClosingDialog || state.isShowCompleteTaskDialog) 0.2f else 1f)
     ) {
         Column (
             modifier = Modifier
@@ -196,15 +196,22 @@ private fun QuestionsScreen(
                     }
 
                     TypeOfBlocks.TEXT -> {
+                        val itemsOfDescriptionBlock: MutableList<Pair<String,String>> = mutableListOf()
+                        block.description.forEach { itemOfBlockDescription ->
+                            itemsOfDescriptionBlock.add(Pair(
+                                when (itemOfBlockDescription.type)
+                                {
+                                TypeOfTitle.UNSTYLED -> "unstyled"
+                                TypeOfTitle.HEADER_ONE -> "header-one"
+                                TypeOfTitle.HEADER_TWO -> "header-two"
+                            },
+                                itemOfBlockDescription.text))
+                        }
                         TextFieldQuestion(
                             modifier = Modifier.fillMaxWidth(),
                             isError = false,
                             enabled = true,
-                            topTitleText = StringVO.Plain(block.question),
-                            topSubtitleText = StringVO.Resource(R.string.skills_survey),
-                            topCaptionText = StringVO.Resource(R.string.skills_survey_discription),
-                            bottomSubtitleText = StringVO.Resource(R.string.professional_development_snapshot),
-                            bottomCaptionText = StringVO.Resource(R.string.professional_development_snapshot_description)
+                            listOfBlockDescription = itemsOfDescriptionBlock
                         )
                         Spacer(modifier = Modifier.height( if (state.blocks.size - 1 == index) 34.dp else 40.dp))
                     }
