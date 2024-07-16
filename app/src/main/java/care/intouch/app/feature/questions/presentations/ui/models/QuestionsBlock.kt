@@ -17,5 +17,5 @@ data class QuestionsBlock(
     val startRange: Int,
     val endRange: Int,
     val selectedValue: Int,
-    val blockIsValid: Boolean
+    val answerNotSpecified: Boolean
 )
