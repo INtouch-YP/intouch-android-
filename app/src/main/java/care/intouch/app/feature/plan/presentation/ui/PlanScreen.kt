@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -160,7 +161,8 @@ fun PlanScreen(
             ConformationDialog(
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .padding(horizontal = 28.dp),
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 onDismissRequest = {
                     Toast.makeText(context, "On dismiss dialogue", Toast.LENGTH_SHORT).show()
                     onEvent(PlanScreenEvent.SetDialogueVisibilityEvent(isVisible = false))
