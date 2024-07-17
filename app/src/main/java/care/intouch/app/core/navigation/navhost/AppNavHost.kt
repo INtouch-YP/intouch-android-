@@ -29,7 +29,6 @@ fun AppNavHost(
     authStartDestination: String?,
     modifier: Modifier
 ) {
-    Timber.tag("NAV").d("Start destination $startDestination, authStartDestination $authStartDestination")
 
     NavHost(
         navController = navController,

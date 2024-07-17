@@ -1,6 +1,5 @@
 package care.intouch.app
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,10 +25,7 @@ import care.intouch.app.core.navigation.AppNavScreen
 import care.intouch.app.core.navigation.Authentication
 import care.intouch.app.core.navigation.AuthorizationRouteBranch
 import care.intouch.app.core.navigation.Home
-import care.intouch.app.core.navigation.Registration
 import care.intouch.app.core.navigation.navhost.MainNavHost
-import care.intouch.app.core.utils.mappers.DeepLinkResultWrapper
-import care.intouch.app.core.utils.mappers.DeepLinksMapper
 import care.intouch.app.models.MainActivitySideEffect
 import care.intouch.uikit.common.StringVO
 import care.intouch.uikit.theme.InTouchTheme
@@ -38,7 +34,6 @@ import com.google.firebase.appdistribution.FirebaseAppDistribution
 import com.google.firebase.appdistribution.FirebaseAppDistributionException
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
