@@ -4,8 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import care.intouch.app.feature.questions.domain.models.Assignments
 import care.intouch.app.feature.questions.domain.models.AssignmentsBlock
+import care.intouch.app.feature.questions.domain.models.AssignmentsChoiceReplies
+import care.intouch.app.feature.questions.domain.models.BlockUpdate
+import care.intouch.app.feature.questions.domain.models.RequestBlock
 import care.intouch.app.feature.questions.domain.models.TypeOfBlocks
 import care.intouch.app.feature.questions.domain.useCase.GetAssignmentsUseCase
+import care.intouch.app.feature.questions.domain.useCase.PatchBlockAssignmentUseCase
 import care.intouch.app.feature.questions.domain.useCase.ShareAssignmentWithTherapistUseCase
 import care.intouch.app.feature.questions.presentations.ui.models.QuestionEvent
 import care.intouch.app.feature.questions.presentations.ui.models.QuestionsBlock
@@ -21,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class QuestionsViewModel @Inject constructor(
     private val getAssignments: GetAssignmentsUseCase,
-    private val shareAssignmentWithTherapist: ShareAssignmentWithTherapistUseCase
+    private val shareAssignmentWithTherapist: ShareAssignmentWithTherapistUseCase,
+    private val patchBlockAssignment: PatchBlockAssignmentUseCase
 ) : ViewModel() {
 
     // Задача полученная с сервера, получение реализовано в блоке init
@@ -71,6 +76,32 @@ class QuestionsViewModel @Inject constructor(
                     )
                 }
                 checkTheValidityOfBlocks()
+            }
+
+            is QuestionEvent.OnPatchBlocksAssignment -> {
+                val blocksOfRequest: MutableList<RequestBlock> = mutableListOf()
+
+                _state.value.blocks.forEach { questionBlock ->
+                    blocksOfRequest.add(RequestBlock(
+                        choiceReplies = questionBlock.choiceReplies ?: emptyList(),
+                        leftPole = questionBlock.leftPole,
+                        rightPole = questionBlock.rightPole,
+                        reply = questionBlock.reply
+                    ))
+                }
+
+              viewModelScope.launch(Dispatchers.IO) {
+                  assignments?.let {
+                      patchBlockAssignment(
+                          it.id, BlockUpdate(
+                              grade = assignments?.grade,
+                              review = assignments?.review,
+                              blocks = blocksOfRequest
+                          )
+                      )
+                  }
+              }
+
             }
         }
     }
@@ -199,6 +230,12 @@ class QuestionsViewModel @Inject constructor(
             _state.value.copy(
                 blocks = result
             )
+        }
+    }
+
+    private fun patchBlock(id: Int, data: BlockUpdate) {
+        viewModelScope.launch(Dispatchers.IO) {
+            patchBlockAssignment.invoke(id, data)
         }
     }
 }

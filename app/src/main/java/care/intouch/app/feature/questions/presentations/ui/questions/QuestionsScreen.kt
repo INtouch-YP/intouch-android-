@@ -325,7 +325,7 @@ private fun QuestionsScreen(
                             onEvent(QuestionEvent.OnShowCompleteTaskDialog(false))
                         },
                         secondaryButtonClick = {
-
+                            onEvent(QuestionEvent.OnPatchBlocksAssignment())
                         },
                         firstLineText = StringVO.Resource(R.string.questions_popap_not_all_filled),
                         intouchButtonText = StringVO.Resource(R.string.back_button),

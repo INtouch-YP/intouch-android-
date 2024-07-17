@@ -27,7 +27,6 @@ class BlockUpdateConvertor @Inject constructor() {
             },
             leftPole = block.leftPole,
             rightPole = block.rightPole,
-            description = block.description,
             reply = block.reply
         )
     }
@@ -57,8 +56,7 @@ class BlockUpdateConvertor @Inject constructor() {
             },
             leftPole = block.leftPole,
             rightPole = block.rightPole,
-            reply = block.reply,
-            description = block.description
+            reply = block.reply
         )
     }
 

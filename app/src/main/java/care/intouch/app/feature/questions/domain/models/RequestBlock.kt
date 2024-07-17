@@ -4,6 +4,5 @@ data class RequestBlock(
     val choiceReplies: List<AssignmentsChoiceReplies>,
     val leftPole: String,
     val rightPole: String,
-    val reply: String,
-    val description: String
+    val reply: String
 )

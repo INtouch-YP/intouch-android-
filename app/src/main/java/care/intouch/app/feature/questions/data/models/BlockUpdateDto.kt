@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class BlockUpdateDto(
     val blocks: List<RequestBlockDto>?,
-    val grade: Int,
-    val review: String
+    val grade: Int?,
+    val review: String?
 )

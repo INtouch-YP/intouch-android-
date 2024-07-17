@@ -24,4 +24,6 @@ sealed class QuestionEvent {
         val isShow: Boolean
     ): QuestionEvent()
 
+    class OnPatchBlocksAssignment(): QuestionEvent()
+
 }

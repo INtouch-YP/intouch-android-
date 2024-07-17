@@ -11,6 +11,5 @@ data class RequestBlockDto(
     val leftPole: String,
     @SerialName("right_pole")
     val rightPole: String,
-    val reply: String,
-    val description: String
+    val reply: String
 )
