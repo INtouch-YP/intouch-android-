@@ -8,7 +8,11 @@ class UserInformationMapper @Inject constructor() {
     fun map(user: User?): UserInformation {
         return UserInformation(
             userId = user?.id ?: 0,
-            userName = user?.firstName ?: "Bob"
+            userName = user?.firstName ?: DEFAULT_NAME
         )
+    }
+
+    companion object {
+        const val DEFAULT_NAME = "Bob"
     }
 }

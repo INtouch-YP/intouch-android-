@@ -13,7 +13,6 @@ interface GetUserInformation {
         private val repository: UserStorage
     ) : GetUserInformation {
         override suspend fun execute(): UserInformation {
-
             val user = repository.read()
             return mapper.map(user = user)
         }

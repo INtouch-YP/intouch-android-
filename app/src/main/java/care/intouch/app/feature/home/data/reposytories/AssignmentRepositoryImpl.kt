@@ -4,7 +4,6 @@ import care.intouch.app.feature.home.data.api.AssignmentsApi
 import care.intouch.app.feature.home.data.mappers.HomeMapper
 import care.intouch.app.feature.home.domain.AssignmentRepository
 import care.intouch.app.feature.home.domain.models.Task
-import timber.log.Timber
 import javax.inject.Inject
 
 class AssignmentRepositoryImpl @Inject constructor(
@@ -14,9 +13,8 @@ class AssignmentRepositoryImpl @Inject constructor(
     override suspend fun getAssignments(userId: Int): Result<List<Task>> {
         try {
             val request = mapper.mapAssignmentsRequest(userId = userId)
-            val response = homeApi.getClientsAssignments()
+            val response = homeApi.getClientsAssignments(request)
 
-            Timber.tag("response").d(response.toString())
             return Result.success(mapper.mapAssignments(response))
         } catch (exception: Exception) {
             return Result.failure(exception)
@@ -44,6 +42,6 @@ class AssignmentRepositoryImpl @Inject constructor(
     }
 
     override suspend fun duplicateAssignment(taskId: Int): Result<String> {
-        TODO("Not yet implemented")
+        return Result.success("")
     }
 }
