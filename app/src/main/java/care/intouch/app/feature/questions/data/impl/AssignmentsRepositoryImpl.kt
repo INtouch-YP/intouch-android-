@@ -5,7 +5,9 @@ import care.intouch.app.feature.authorization.data.models.mappers.NetworkToUserE
 import care.intouch.app.feature.common.data.models.exception.NetworkException
 import care.intouch.app.feature.questions.data.api.AssignmentsApi
 import care.intouch.app.feature.questions.data.converters.AssignmentsConvertor
+import care.intouch.app.feature.questions.data.converters.BlockUpdateConvertor
 import care.intouch.app.feature.questions.domain.models.Assignments
+import care.intouch.app.feature.questions.domain.models.BlockUpdate
 import care.intouch.app.feature.questions.domain.useCase.AssignmentsRepository
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -13,7 +15,8 @@ import javax.inject.Inject
 class AssignmentsRepositoryImpl  @Inject constructor(
     private val assignmentsApi: AssignmentsApi,
     private val json: Json,
-    private val convertor: AssignmentsConvertor
+    private val convertor: AssignmentsConvertor,
+    private val convertorBlock: BlockUpdateConvertor
 ): AssignmentsRepository {
     override suspend fun getAssignments(id: Int): Result<Assignments> {
         try {
@@ -47,6 +50,30 @@ class AssignmentsRepositoryImpl  @Inject constructor(
             )
         } catch (e: NetworkException) {
             return when(e) {
+                is NetworkException.BadRequest -> {
+                    val response = handleErrorResponse<Assignments>(e.errorBody)
+                    Result.failure(
+                        NetworkException.BadRequest(
+                            "Надо сюда поймать ошибку какую-нибудь",
+                            e.httpStatusCode
+                        )
+                    )
+                }
+                else -> {
+                    Result.failure(e)
+                }
+            }
+        }
+    }
+
+    override suspend fun patchClientAssingment(id: Int, data: BlockUpdate): Result<Assignments> {
+        try {
+            val response = assignmentsApi.patchClientAssignment(id, convertorBlock.map(data))
+            return Result.success(
+                convertor.map(response)
+            )
+        } catch (e: NetworkException) {
+            return when (e) {
                 is NetworkException.BadRequest -> {
                     val response = handleErrorResponse<Assignments>(e.errorBody)
                     Result.failure(
