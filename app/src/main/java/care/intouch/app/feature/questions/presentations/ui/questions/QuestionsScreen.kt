@@ -1,5 +1,6 @@
 package care.intouch.app.feature.questions.presentations.ui.questions
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -28,6 +29,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -234,11 +236,17 @@ private fun QuestionsScreen(
                                     color = InTouchTheme.colors.textGreen
                                 )
                                 Spacer(modifier = Modifier.height(12.dp))
-                                AsyncImage(
-                                    model = block.image,
+                                /*AsyncImage(
+                                    model = block.image,                                    КОГДА ПРИХОДЯЩУЮ ССЫЛКУ ПОМЕНЯЮТ НА HTTPS - РАСКОММЕНИТЬ
                                     contentDescription = "task image on questions screen",
                                     contentScale = ContentScale.Crop,
-                                    modifier = Modifier.fillMaxSize()
+                                    modifier = Modifier.fillMaxSize(),
+                                    placeholder = painterResource(id = care.intouch.uikit.R.drawable.dunning_kruger_effect_image)
+                                )*/
+                                Image(
+                                    painter = painterResource(id = care.intouch.uikit.R.drawable.dunning_kruger_effect_image),
+                                    contentDescription = "task image on introductory questions screen",
+                                    contentScale = ContentScale.Fit
                                 )
                             }
                         }
