@@ -8,6 +8,7 @@ import care.intouch.app.feature.questions.data.converters.AssignmentsConvertor
 import care.intouch.app.feature.questions.data.converters.BlockUpdateConvertor
 import care.intouch.app.feature.questions.domain.models.Assignments
 import care.intouch.app.feature.questions.domain.models.BlockUpdate
+import care.intouch.app.feature.questions.domain.models.UpdateVisibleAssignmentResponse
 import care.intouch.app.feature.questions.domain.useCase.AssignmentsRepository
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -42,11 +43,11 @@ class AssignmentsRepositoryImpl  @Inject constructor(
         }
     }
 
-    override suspend fun shareWithTherapist(id: Int): Result<String> {
+    override suspend fun shareWithTherapist(id: Int): Result<UpdateVisibleAssignmentResponse> {
         try {
             val response = assignmentsApi.shareWithTherapist(id)
             return Result.success (
-                response
+                UpdateVisibleAssignmentResponse(response.message)
             )
         } catch (e: NetworkException) {
             return when(e) {
