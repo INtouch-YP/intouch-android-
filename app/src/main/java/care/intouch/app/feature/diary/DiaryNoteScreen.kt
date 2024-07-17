@@ -1,6 +1,7 @@
 package care.intouch.app.feature.diary
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -83,59 +84,63 @@ private fun DiaryNoteScreen(
     isDialogVisible: Boolean = false,
     dialogState: DialogState = DialogState()
 ) {
-    Column(
+    Box(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        DiaryHeader(
-            modifier = Modifier,
-            onBackArrowClick = { onBackButtonClick.invoke() },
-            title = StringVO.Resource(care.intouch.app.R.string.diary_title)
-        )
-        if (state.isLoading) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            DiaryHeader(
+                modifier = Modifier,
+                onBackArrowClick = { onBackButtonClick.invoke() },
+                title = StringVO.Resource(care.intouch.app.R.string.diary_title)
+            )
             LoadingContainer(
                 modifier = Modifier.fillMaxSize(),
-                isLoading = true
-            ) {}
-        } else {
-            PrimaryButtonGreen(
-                onClick = { onMakeNoteClick.invoke() },
-                modifier = Modifier.padding(bottom = 14.dp, top = 16.dp),
-                text = StringVO.Resource(care.intouch.app.R.string.make_note_button)
-            )
-
-            DiaryLayout(
-                diaryEntryList = state.diaryList,
-                onDeleteButtonClicked = { itemId, itemIndex ->
-                    onEvent(
-                        DiaryChangeEvent.IntentionToDelete(
-                            idToDelete = itemId,
-                            index = itemIndex
-                        )
+                isLoading = state.isLoading
+            ) {
+                Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    PrimaryButtonGreen(
+                        onClick = { onMakeNoteClick.invoke() },
+                        modifier = Modifier
+                            .padding(bottom = 14.dp, top = 16.dp),
+                        text = StringVO.Resource(care.intouch.app.R.string.make_note_button)
                     )
-                },
-                onSwitcherChange = { idToShare, index, shareWithDoc ->
-                    onEvent(
-                        DiaryChangeEvent.OnShareWithDoc(
-                            idToShare = idToShare,
-                            index = index,
-                            sharedWithDoctor = shareWithDoc
-                        )
+                    DiaryLayout(
+                        diaryEntryList = state.diaryList,
+                        onDeleteButtonClicked = { itemId, itemIndex ->
+                            onEvent(
+                                DiaryChangeEvent.IntentionToDelete(
+                                    idToDelete = itemId,
+                                    index = itemIndex
+                                )
+                            )
+                        },
+                        onSwitcherChange = { idToShare, index, shareWithDoc ->
+                            onEvent(
+                                DiaryChangeEvent.OnShareWithDoc(
+                                    idToShare = idToShare,
+                                    index = index,
+                                    sharedWithDoctor = shareWithDoc
+                                )
+                            )
+                        }
                     )
                 }
-            )
-            if (isDialogVisible) {
-                ConfirmDeleteDialog(
-                    onConfirm = { dialogState.onConfirm.invoke() },
-                    onCancel = { dialogState.onDismiss.invoke() },
-                    deleteQuestion = dialogState.title,
-                    deleteWarning = dialogState.massage,
-                    confirmButtonText = dialogState.onConfirmButtonText,
-                    cancelButtonText = dialogState.onDismissButtonText
-                )
             }
         }
+    }
+    if (isDialogVisible) {
+        ConfirmDeleteDialog(
+            onConfirm = { dialogState.onConfirm.invoke() },
+            onCancel = { dialogState.onDismiss.invoke() },
+            deleteQuestion = dialogState.title,
+            deleteWarning = dialogState.massage,
+            confirmButtonText = dialogState.onConfirmButtonText,
+            cancelButtonText = dialogState.onDismissButtonText
+        )
     }
 }
 
@@ -191,6 +196,58 @@ fun HomeScreenWithDiaryPreview() {
                                 Mood(name = "Loneliness"),
                                 Mood(name = "Loneliness")
                             ),
+                            sharedWithDoc = false
+                        ),
+                        DiaryEntry(
+                            id = 1,
+                            data = buildString {
+                                append("13, jul")
+                            },
+                            note = buildString {
+                                append("Lorem Ipsum dolor sit amet Lorem Ipsum Невероятно")
+                                append("длинный текст, который не должен поместиться на экране,")
+                                append("а в конце должны быть точески ")
+                            },
+                            moodList = listOf(Mood(name = "Bad")),
+                            sharedWithDoc = false
+                        ),
+                        DiaryEntry(
+                            id = 1,
+                            data = buildString {
+                                append("13, jul")
+                            },
+                            note = buildString {
+                                append("Lorem Ipsum dolor sit amet Lorem Ipsum Невероятно")
+                                append("длинный текст, который не должен поместиться на экране,")
+                                append("а в конце должны быть точески ")
+                            },
+                            moodList = listOf(Mood(name = "Bad")),
+                            sharedWithDoc = false
+                        ),
+                        DiaryEntry(
+                            id = 1,
+                            data = buildString {
+                                append("13, jul")
+                            },
+                            note = buildString {
+                                append("Lorem Ipsum dolor sit amet Lorem Ipsum Невероятно")
+                                append("длинный текст, который не должен поместиться на экране,")
+                                append("а в конце должны быть точески ")
+                            },
+                            moodList = listOf(Mood(name = "Bad")),
+                            sharedWithDoc = false
+                        ),
+                        DiaryEntry(
+                            id = 1,
+                            data = buildString {
+                                append("13, jul")
+                            },
+                            note = buildString {
+                                append("Lorem Ipsum dolor sit amet Lorem Ipsum Невероятно")
+                                append("длинный текст, который не должен поместиться на экране,")
+                                append("а в конце должны быть точески ")
+                            },
+                            moodList = listOf(Mood(name = "Bad")),
                             sharedWithDoc = false
                         ),
                         DiaryEntry(
