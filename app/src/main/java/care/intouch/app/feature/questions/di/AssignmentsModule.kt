@@ -1,8 +1,9 @@
 package care.intouch.app.feature.questions.di
 
-import care.intouch.app.feature.questions.data.impl.GetAssignmentsRepositoryImpl
-import care.intouch.app.feature.questions.domain.useCase.GetAssignmentsRepository
+import care.intouch.app.feature.questions.data.impl.AssignmentsRepositoryImpl
+import care.intouch.app.feature.questions.domain.useCase.AssignmentsRepository
 import care.intouch.app.feature.questions.domain.useCase.GetAssignmentsUseCase
+import care.intouch.app.feature.questions.domain.useCase.ShareAssignmentWithTherapistUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -16,5 +17,8 @@ interface AssignmentsModule {
     fun bindGetAssignmentsUseCase(impl: GetAssignmentsUseCase.Base): GetAssignmentsUseCase
 
     @Binds
-    fun bindGetAssignmentsRepository(impl: GetAssignmentsRepositoryImpl): GetAssignmentsRepository
+    fun  bindSharaAssignmentWithTherapistUseCase(impl: ShareAssignmentWithTherapistUseCase.Base): ShareAssignmentWithTherapistUseCase
+
+    @Binds
+    fun bindGetAssignmentsRepository(impl: AssignmentsRepositoryImpl): AssignmentsRepository
 }

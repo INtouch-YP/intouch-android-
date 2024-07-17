@@ -1,7 +1,7 @@
 package care.intouch.app.feature.questions.di
 
 import care.intouch.app.feature.common.di.RetrofitWithAuth
-import care.intouch.app.feature.questions.data.api.GetAssignmentsApi
+import care.intouch.app.feature.questions.data.api.AssignmentsApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,7 +16,7 @@ class GetAssignmentsModule {
     @Singleton
     fun provideAssignmentsApi(
         @RetrofitWithAuth retrofit: Retrofit
-    ): GetAssignmentsApi {
-        return retrofit.create(GetAssignmentsApi::class.java)
+    ): AssignmentsApi {
+        return retrofit.create(AssignmentsApi::class.java)
     }
 }

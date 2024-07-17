@@ -6,6 +6,7 @@ import care.intouch.app.feature.questions.domain.models.Assignments
 import care.intouch.app.feature.questions.domain.models.AssignmentsBlock
 import care.intouch.app.feature.questions.domain.models.TypeOfBlocks
 import care.intouch.app.feature.questions.domain.useCase.GetAssignmentsUseCase
+import care.intouch.app.feature.questions.domain.useCase.ShareAssignmentWithTherapistUseCase
 import care.intouch.app.feature.questions.presentations.ui.models.QuestionEvent
 import care.intouch.app.feature.questions.presentations.ui.models.QuestionsBlock
 import care.intouch.app.feature.questions.presentations.ui.models.QuestionsState
@@ -19,7 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuestionsViewModel @Inject constructor(
-    private val getAssignments: GetAssignmentsUseCase
+    private val getAssignments: GetAssignmentsUseCase,
+    private val shareAssignmentWithTherapist: ShareAssignmentWithTherapistUseCase
 ) : ViewModel() {
 
     // Задача полученная с сервера, получение реализовано в блоке init
@@ -49,6 +51,9 @@ class QuestionsViewModel @Inject constructor(
                         isCheckedToggle = event.isChecked
                     )
                 }
+                viewModelScope.launch(Dispatchers.IO) {
+                    assignments?.let { shareAssignmentWithTherapist.invoke(it.id) }
+                }
             }
 
             is QuestionEvent.OnShowClosingDialog -> {
@@ -65,6 +70,7 @@ class QuestionsViewModel @Inject constructor(
                         isShowCompleteTaskDialog = event.isShow
                     )
                 }
+                checkTheValidityOfBlocks()
             }
         }
     }
@@ -107,14 +113,15 @@ class QuestionsViewModel @Inject constructor(
         val result: MutableList<QuestionsBlock> = mutableListOf()
         _state.value.blocks.forEach {
             when(it.type) {
-
                 TypeOfBlocks.OPEN -> {
                     if(it.reply.isEmpty()) {
                         result.add(it.copy(
                             answerNotSpecified = true
                         ))
                     } else {
-                        result.add(it)
+                        result.add(it.copy(
+                            answerNotSpecified = false
+                        ))
                     }
                 }
 
@@ -123,7 +130,6 @@ class QuestionsViewModel @Inject constructor(
                     it.choiceReplies!!.forEach {
                         if(it.checked) {
                             answerWasChoice = true
-                            //break    // не даёт прервать цикл, потом разберусь
                         }
                     }
                     if(answerWasChoice) {

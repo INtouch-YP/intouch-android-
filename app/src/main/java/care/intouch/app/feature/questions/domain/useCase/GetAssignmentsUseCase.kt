@@ -7,10 +7,10 @@ interface GetAssignmentsUseCase {
     suspend operator fun invoke(id: Int): Result<Assignments>
 
     class Base @Inject constructor(
-        private val getAssignmentsRepository: GetAssignmentsRepository
+        private val assignmentsRepository: AssignmentsRepository
     ): GetAssignmentsUseCase {
         override suspend fun invoke(id: Int): Result<Assignments> {
-            return getAssignmentsRepository.getAssignments(id)
+            return assignmentsRepository.getAssignments(id)
         }
     }
 }
