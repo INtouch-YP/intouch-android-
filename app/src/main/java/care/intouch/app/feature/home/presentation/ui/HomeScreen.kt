@@ -64,7 +64,7 @@ fun HomeScreen(
     var toastState by remember { mutableStateOf(ToastState()) }
     val sideEffect = viewModel.sideEffect
     val coroutineScope = rememberCoroutineScope()
-    val popUpDelay = 1000L
+    val popUpDelayMsc = 1000L
 
 
     LaunchedEffect(key1 = sideEffect) {
@@ -95,7 +95,7 @@ fun HomeScreen(
                         onDismiss = {
                             effect.onDismiss()
                             coroutineScope.launch {
-                                delay(popUpDelay)
+                                delay(popUpDelayMsc)
                                 isToastVisible = false
                             }
                         }
@@ -152,13 +152,13 @@ fun HomeScreen(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(144.dp),
+                    .height(98.dp),
                 shape = CustomHeaderShape(),
                 color = InTouchTheme.colors.mainBlue
             ) {
                 Text(
                     modifier = Modifier
-                        .padding(top = 84.dp),
+                        .padding(top = 36.dp),
                     text = stringResource(id = AppR.string.hi_title, state.userName),
                     style = InTouchTheme.typography.titleLarge,
                     textAlign = TextAlign.Center,
