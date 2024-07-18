@@ -134,7 +134,7 @@ fun HomeScreen(
 ) {
     Box(
         modifier = Modifier
-            .background(InTouchTheme.colors.white)
+            .background(InTouchTheme.colors.input85)
             .draggable(
                 state = rememberDraggableState { onDelta ->
                     if (onDelta > 5f)

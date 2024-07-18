@@ -58,10 +58,10 @@ class HomeMapper @Inject constructor() {
         page: Int? = null
     ): HashMap<String, String> {
         val request = hashMapOf(USER to "$userId")
-        if (limit != 0) {
+        if (limit != null) {
             request[LIMIT] = "$limit"
         }
-        if (page != 0) {
+        if (page != null) {
             request[PAGE] = "$page"
         }
         return request
