@@ -22,7 +22,7 @@ interface AssignmentsApi {
     suspend fun compliteClientsAssignment (
         @Path("id") id: Int ): UpdateVisibleAssignmentResponse
 
-    @PATCH("\"/api/v1/assignments-client/{id}/")
+    @PATCH("/api/v1/assignments-client/{id}/")
     suspend fun patchClientAssignment(
         @Path("id") id: Int,
         @Body data: BlockUpdateDto
