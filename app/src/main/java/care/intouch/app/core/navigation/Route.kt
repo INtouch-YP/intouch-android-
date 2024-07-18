@@ -19,6 +19,10 @@ object Sample: IntouchDestination {
 object SampleRouteBranch: IntouchDestination {
     override val route = "SAMPLE_ROUTE_BRANCH"
 }
+
+object OnEmotionClick : IntouchDestination {
+    override val route = "ON_EMOTION_CLICK"
+}
 object ButtonsSample: IntouchDestination {
     override val route = "BUTTONS_SAMPLE"
 }
