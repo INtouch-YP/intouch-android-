@@ -19,6 +19,10 @@ object Sample: IntouchDestination {
 object SampleRouteBranch: IntouchDestination {
     override val route = "SAMPLE_ROUTE_BRANCH"
 }
+
+object OnEmotionClick : IntouchDestination {
+    override val route = "ON_EMOTION_CLICK"
+}
 object ButtonsSample: IntouchDestination {
     override val route = "BUTTONS_SAMPLE"
 }
@@ -116,7 +120,8 @@ object Profile: IntouchDestination {
 
 // Plan branch
 object PlanRouteBranch: IntouchDestination {
-    override val route = "PLAN_ROUTE_BRANCH"
+    override val route = "PLAN_ROUTE_BRANCH/{itemId}"
+    fun createRoute(itemId: Int) = "PLAN_ROUTE_BRANCH/$itemId"
 }
 object PlanBottomNav: IntouchDestination {
     override val route = "PLAN_BOTTOM_NAV"
@@ -125,7 +130,7 @@ object Task: IntouchDestination {
     override val route = "TASK"
 }
 object TaskIntroduction: IntouchDestination {
-    override val route = "TASK_INTRODUCTION"
+    override val route = "TASK_INTRODUCTION/{itemId}"
 }
 object TaskEstimate: IntouchDestination {
     override val route = "TASK_ESTIMATE"
@@ -166,4 +171,16 @@ object PinCodeConfirm: IntouchDestination {
 }
 object SuccessfulPinCodeChange: IntouchDestination {
     override val route = "SUCCESSFUL_PIN_CODE_CHANGE"
+}
+
+//Questions branch
+object QuestionsRouteBranch: IntouchDestination {
+    override val route = "QUESTIONS_ROUTE_BRANCH/{itemId}"
+    fun createRoute(itemId: Int) = "QUESTIONS_ROUTE_BRANCH/$itemId"
+}
+object AssignmentsQuestion: IntouchDestination {
+    override val route = "ASSIGNMENT_QUESTIONS"
+}
+object IntroductoryQuestion: IntouchDestination {
+    override val route = "INTRODUCTORY_QUESTIONS/{itemId}"
 }
