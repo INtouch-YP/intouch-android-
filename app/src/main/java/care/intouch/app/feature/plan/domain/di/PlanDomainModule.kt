@@ -1,6 +1,6 @@
 package care.intouch.app.feature.plan.domain.di
 
-import care.intouch.app.feature.plan.domain.useCase.GetAssignmentsUseCase
+import care.intouch.app.feature.plan.domain.usecase.GetAssignmentsUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

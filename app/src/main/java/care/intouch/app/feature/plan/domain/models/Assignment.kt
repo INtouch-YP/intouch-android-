@@ -4,5 +4,5 @@ data class Assignment(
     val id: Int,
     val title: String,
     val date: String,
-    val status: AssignmentStatus
+    val status: AssignmentStatus,
 )

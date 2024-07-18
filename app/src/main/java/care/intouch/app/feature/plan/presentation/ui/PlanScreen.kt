@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -20,17 +21,18 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import care.intouch.app.R
 import care.intouch.app.feature.home.presentation.ui.FoldingScreen
+import care.intouch.app.feature.plan.domain.models.Assignment
 import care.intouch.app.feature.plan.domain.models.AssignmentStatus
-import care.intouch.app.feature.plan.domain.useCase.mockAssignments
+import care.intouch.app.feature.plan.domain.models.PlanScreenSideEffect
 import care.intouch.app.feature.plan.presentation.models.PlanScreenEvent
 import care.intouch.app.feature.plan.presentation.models.PlanScreenState
 import care.intouch.app.feature.plan.presentation.viewmodel.PlanScreenViewModel
 import care.intouch.uikit.common.StringVO
 import care.intouch.uikit.theme.InTouchTheme
-import care.intouch.uikit.ui.cards.ConformationDialog
+import care.intouch.uikit.ui.events.Dialog
 import care.intouch.uikit.ui.screens.my_plan.my_plan.CardHolder
-import care.intouch.uikit.ui.screens.my_plan.my_plan.ChipsRowItem
 import care.intouch.uikit.ui.screens.my_plan.my_plan.ChipsRow
+import care.intouch.uikit.ui.screens.my_plan.my_plan.ChipsRowItem
 import care.intouch.uikit.ui.screens.my_plan.my_plan.PlanHeader
 
 @Composable
@@ -38,8 +40,24 @@ fun PlanScreen(
     onTaskListItemClick: (Int) -> Unit,
     onBackArrowClick: () -> Unit
 ) {
+    val context = LocalContext.current
+
     val viewModel: PlanScreenViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.sideEffect.collect { sideEffect ->
+            when(sideEffect) {
+                is PlanScreenSideEffect.ShowToast -> {
+                    Toast.makeText(
+                        context,
+                        sideEffect.message.value(context),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
 
     PlanScreen(
         state = state,
@@ -158,7 +176,7 @@ fun PlanScreen(
 
         if (state.isDialogueVisible) {
             FoldingScreen()
-            ConformationDialog(
+            Dialog(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .fillMaxWidth()
@@ -171,8 +189,8 @@ fun PlanScreen(
                     Toast.makeText(context, "On confirm dialogue", Toast.LENGTH_SHORT).show()
                     onEvent(PlanScreenEvent.SetDialogueVisibilityEvent(isVisible = false))
                 },
-                headerText = StringVO.Resource(resId = R.string.info_delete_task_question).value(),
-                dialogText = StringVO.Resource(resId = R.string.warning_delete).value(),
+                dialogHeaderText = StringVO.Resource(resId = R.string.info_delete_task_question).value(),
+                dialogMessageText = StringVO.Resource(resId = R.string.warning_delete).value(),
                 dismissButtonText = StringVO.Resource(resId = R.string.cancel_button).value(),
                 confirmButtonText = StringVO.Resource(resId = R.string.confirm_button).value()
             )
@@ -194,3 +212,48 @@ fun PlanScreenPreview() {
         )
     }
 }
+
+val mockAssignments: List<Assignment> = listOf(
+    Assignment(
+        id = 1,
+        title = "Assignment 1",
+        date = "19.06.2024",
+        status = AssignmentStatus.TO_DO
+    ),
+    Assignment(
+        id = 2,
+        title = "Assignment 2",
+        date = "20.06.2024",
+        status = AssignmentStatus.TO_DO
+    ),
+    Assignment(
+        id = 3,
+        title = "Assignment 3",
+        date = "21.06.2024",
+        status = AssignmentStatus.IN_PROGRESS
+    ),
+    Assignment(
+        id = 4,
+        title = "Assignment 4",
+        date = "22.06.2024",
+        status = AssignmentStatus.IN_PROGRESS
+    ),
+    Assignment(
+        id = 5,
+        title = "Assignment 5",
+        date = "23.06.2024",
+        status = AssignmentStatus.DONE
+    ),
+    Assignment(
+        id = 6,
+        title = "Assignment 6",
+        date = "24.06.2024",
+        status = AssignmentStatus.DONE
+    ),
+    Assignment(
+        id = 7,
+        title = "Assignment 7",
+        date = "25.06.2024",
+        status = AssignmentStatus.DONE
+    )
+)

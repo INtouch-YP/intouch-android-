@@ -2,11 +2,10 @@ package care.intouch.app.core.navigation.navhost
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
-import androidx.navigation.navArgument
+import androidx.navigation.navigation
 import care.intouch.app.core.navigation.AppNavScreen
+import care.intouch.app.core.navigation.AssignmentsQuestion
 import care.intouch.app.core.navigation.Plan
 import care.intouch.app.core.navigation.PlanBottomNav
 import care.intouch.app.core.navigation.PlanRouteBranch
@@ -15,7 +14,7 @@ import care.intouch.app.core.navigation.TaskEstimate
 import care.intouch.app.core.navigation.TaskIntroduction
 import care.intouch.app.feature.plan.presentation.ui.TaskCompletingScreen
 import care.intouch.app.feature.plan.presentation.ui.TaskEstimateScreen
-import care.intouch.app.feature.plan.presentation.ui.TaskIntroductionScreen
+import care.intouch.app.feature.questions.presentations.ui.introductory.IntroductoryQuestionsScreen
 
 fun NavGraphBuilder.addNestedPlanGraph(
     navController: NavHostController
@@ -23,17 +22,17 @@ fun NavGraphBuilder.addNestedPlanGraph(
     navigation(
         startDestination = TaskIntroduction.route,
         route = PlanRouteBranch.route,
-        arguments = listOf(navArgument("itemId") { type = NavType.IntType })
     ) {
 
-        composable(route = TaskIntroduction.route) { backStackEntry ->
-            val itemId = backStackEntry.arguments?.getInt("itemId")
-            TaskIntroductionScreen(
-                itemId = itemId,
+        composable(route = TaskIntroduction.route) {
+            IntroductoryQuestionsScreen(
+                itemId = null,
+                onBackClick = {
+                    navController.popBackStack()
+                },
                 onNextClick = {
-                    navController.navigate(route = TaskCompleting.route)
-                }
-            )
+                    navController.navigate(route = AssignmentsQuestion.route)
+                })
         }
 
         composable(route = TaskEstimate.route) {
