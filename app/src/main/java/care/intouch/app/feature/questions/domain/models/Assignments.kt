@@ -1,6 +1,5 @@
 package care.intouch.app.feature.questions.domain.models
 
-
 data class Assignments(
     val id: Int,
     val title: String,

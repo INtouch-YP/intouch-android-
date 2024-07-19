@@ -50,8 +50,7 @@ class AssignmentsConvertor @Inject constructor() {
             image = assignmentsBlock.image,
             question = assignmentsBlock.question,
             reply = assignmentsBlock.reply,
-            //description = assignmentsBlock.description,
-            description = "Нужно ли это поле вообще???",
+            description = "",
             type = getTypeOfBlock(assignmentsBlock.type),
             startRange = assignmentsBlock.startRange,
             endRange = assignmentsBlock.endRange

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import care.intouch.app.feature.questions.domain.models.Assignments
 import care.intouch.app.feature.questions.domain.models.AssignmentsBlock
-import care.intouch.app.feature.questions.domain.models.AssignmentsChoiceReplies
 import care.intouch.app.feature.questions.domain.models.BlockUpdate
 import care.intouch.app.feature.questions.domain.models.RequestBlock
 import care.intouch.app.feature.questions.domain.models.TypeOfBlocks
@@ -29,15 +28,14 @@ class QuestionsViewModel @Inject constructor(
     private val patchBlockAssignment: PatchBlockAssignmentUseCase
 ) : ViewModel() {
 
-    // Задача полученная с сервера, получение реализовано в блоке init
     private var assignments: Assignments? = null
     private var _state = MutableStateFlow(QuestionsState(mutableListOf()))
     val state = _state.asStateFlow()
 
-    init {      // Получам данные по задаче
+    init {
         viewModelScope.launch(Dispatchers.IO) {
             getAssignments.invoke(1)
-                .onSuccess {        // тут id - хардкод, в будущем будем выдергивать id из данных с предыдущего экрана
+                .onSuccess {
                     assignments = it
                     addBlocksInState(it.blocks)
                 }
@@ -45,7 +43,7 @@ class QuestionsViewModel @Inject constructor(
     }
 
     fun onEvent(event: QuestionEvent) {
-        when(event) {
+        when (event) {
             is QuestionEvent.OnBlockChange -> {
                 updateState(event)
             }
@@ -82,33 +80,33 @@ class QuestionsViewModel @Inject constructor(
                 val blocksOfRequest: MutableList<RequestBlock> = mutableListOf()
 
                 _state.value.blocks.forEach { questionBlock ->
-                    blocksOfRequest.add(RequestBlock(
-                        choiceReplies = questionBlock.choiceReplies ?: emptyList(),
-                        leftPole = questionBlock.leftPole,
-                        rightPole = questionBlock.rightPole,
-                        reply = questionBlock.reply
-                    ))
+                    blocksOfRequest.add(
+                        RequestBlock(
+                            choiceReplies = questionBlock.choiceReplies ?: emptyList(),
+                            leftPole = questionBlock.leftPole,
+                            rightPole = questionBlock.rightPole,
+                            reply = questionBlock.reply
+                        )
+                    )
                 }
 
-              viewModelScope.launch(Dispatchers.IO) {
-                  assignments?.let {
-                      patchBlockAssignment(
-                          it.id, BlockUpdate(
-                              grade = assignments?.grade,
-                              review = assignments?.review,
-                              blocks = blocksOfRequest
-                          )
-                      )
-                  }
-              }
-
+                viewModelScope.launch(Dispatchers.IO) {
+                    assignments?.let {
+                        patchBlockAssignment(
+                            it.id, BlockUpdate(
+                                grade = assignments?.grade,
+                                review = assignments?.review,
+                                blocks = blocksOfRequest
+                            )
+                        )
+                    }
+                }
             }
         }
     }
 
 
-
-    private fun addBlocksInState(blocks: List<AssignmentsBlock>) {  //конвертирую блоки с сервера в блоки для стейта и выставляю на доп поля значения по хардкоду
+    private fun addBlocksInState(blocks: List<AssignmentsBlock>) {
         val result: MutableList<QuestionsBlock> = mutableListOf()
         blocks.forEach {
             result.add(
@@ -125,74 +123,78 @@ class QuestionsViewModel @Inject constructor(
                     startRange = it.startRange,
                     endRange = it.endRange,
                     selectedValue = 1,
-                    answerNotSpecified = false     // ставлю true  чтоб поле не отрисовывалось красным при изначальной отрисовке экрана
-                )                           // blockIsValid будет проверяться только при нажатии кнопки на отправку.
-                // Вот функция для этого checkTheValidityOfBlocks()
+                    answerNotSpecified = false
+                )
             )
         }
-        _state.update {     // обновляем стейт
+        _state.update {
             _state.value.copy(
                 blocks = result
             )
         }
     }
 
-    // как-то надо проверить можно ли нажимать на кнопки "далее", "отправить врачу" или что там еще
-    // и их состояния так же поместить в стейт, добавить там полей то есть
-
-    private fun checkTheValidityOfBlocks() {    // Проверка ответили на вопрос или нет
+    private fun checkTheValidityOfBlocks() {
         val result: MutableList<QuestionsBlock> = mutableListOf()
         _state.value.blocks.forEach {
-            when(it.type) {
+            when (it.type) {
                 TypeOfBlocks.OPEN -> {
-                    if(it.reply.isEmpty()) {
-                        result.add(it.copy(
-                            answerNotSpecified = true
-                        ))
+                    if (it.reply.isEmpty()) {
+                        result.add(
+                            it.copy(
+                                answerNotSpecified = true
+                            )
+                        )
                     } else {
-                        result.add(it.copy(
-                            answerNotSpecified = false
-                        ))
+                        result.add(
+                            it.copy(
+                                answerNotSpecified = false
+                            )
+                        )
                     }
                 }
 
                 TypeOfBlocks.SINGLE, TypeOfBlocks.MULTIPLE -> {
                     var answerWasChoice = false
                     it.choiceReplies!!.forEach {
-                        if(it.checked) {
+                        if (it.checked) {
                             answerWasChoice = true
                         }
                     }
-                    if(answerWasChoice) {
+                    if (answerWasChoice) {
                         result.add(it)
                     } else {
-                        result.add(it.copy(
-                            answerNotSpecified = true
-                        ))
+                        result.add(
+                            it.copy(
+                                answerNotSpecified = true
+                            )
+                        )
                     }
                 }
 
-                else -> {       // Сюда идут TypeOfBlocks.UNDEFINED, TypeOfBlocks.IMAGE, TypeOfBlocks.RANGE, TypeOfBlocks.TEXT
+                else -> {
                     result.add(it)
                 }
             }
         }
-        _state.update {     // обновляем стейт
+        _state.update {
             _state.value.copy(
                 blocks = result
             )
         }
     }
 
-    private fun updateState(event: QuestionEvent.OnBlockChange) {       // Поганое решение, но пока самое простое что в голову пришло
+    private fun updateState(event: QuestionEvent.OnBlockChange) {
         val result: MutableList<QuestionsBlock> = mutableListOf()
-        when(event.type) {
+        when (event.type) {
             TypeOfBlocks.OPEN -> {
                 _state.value.blocks.forEach {
-                    if(it.id == event.id){
-                        result.add(it.copy(
-                            reply = event.reply!!
-                        ))
+                    if (it.id == event.id) {
+                        result.add(
+                            it.copy(
+                                reply = event.reply!!
+                            )
+                        )
                     } else {
                         result.add(it)
                     }
@@ -201,32 +203,37 @@ class QuestionsViewModel @Inject constructor(
 
             TypeOfBlocks.SINGLE, TypeOfBlocks.MULTIPLE -> {
                 _state.value.blocks.forEach {
-                    if(it.id == event.id){
-                        result.add(it.copy(
-                            choiceReplies = event.choiceReplies!!
-                        ))
-                    } else {
-                        result.add(it)
-                    }
-                }
-            }
-            TypeOfBlocks.RANGE -> {
-                _state.value.blocks.forEach {
-                    if(it.id == event.id){
-                        result.add(it.copy(
-                            selectedValue = event.selectedValue!!
-                        ))
+                    if (it.id == event.id) {
+                        result.add(
+                            it.copy(
+                                choiceReplies = event.choiceReplies!!
+                            )
+                        )
                     } else {
                         result.add(it)
                     }
                 }
             }
 
-            else ->{
+            TypeOfBlocks.RANGE -> {
+                _state.value.blocks.forEach {
+                    if (it.id == event.id) {
+                        result.add(
+                            it.copy(
+                                selectedValue = event.selectedValue!!
+                            )
+                        )
+                    } else {
+                        result.add(it)
+                    }
+                }
+            }
+
+            else -> {
 
             }
         }
-        _state.update {     // обновляем стейт
+        _state.update {
             _state.value.copy(
                 blocks = result
             )

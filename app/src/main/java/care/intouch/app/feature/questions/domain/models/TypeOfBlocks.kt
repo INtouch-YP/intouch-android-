@@ -7,5 +7,5 @@ enum class TypeOfBlocks {
     RANGE,
     TEXT,
     IMAGE,
-    UNDEFINED  // сделал на случай если новый тип добавят
+    UNDEFINED
 }

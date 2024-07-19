@@ -67,5 +67,4 @@ class BlockUpdateConvertor @Inject constructor() {
             checked = choiceReplies.checked
         )
     }
-
 }

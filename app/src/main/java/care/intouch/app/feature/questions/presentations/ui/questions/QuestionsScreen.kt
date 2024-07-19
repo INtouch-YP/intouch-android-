@@ -94,7 +94,7 @@ private fun QuestionsScreen(
             }
             .alpha(if (state.isShowClosingDialog || state.isShowCompleteTaskDialog) 0.2f else 1f)
     ) {
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 28.dp),
@@ -111,33 +111,36 @@ private fun QuestionsScreen(
             Spacer(modifier = Modifier.height(48.dp))
 
             state.blocks.forEachIndexed { index, block ->
-                when(block.type) {
+                when (block.type) {
                     TypeOfBlocks.OPEN -> {
-                       MultilineTextField(
-                           subtitleText = StringVO.Plain(block.question),
-                           captionText = StringVO.Resource(R.string.inscribe_motivates_question),
-                           value = block.reply,
-                           modifier = Modifier.fillMaxWidth(),
-                           hint = StringVO.Resource(R.string.write_your_answer_here),
-                           onValueChange = {
-                               onEvent(QuestionEvent.OnBlockChange(
-                                   id = block.id,
-                                   reply = it,
-                                   type = TypeOfBlocks.OPEN,
-                               ))
-                           },
-                           isError = block.answerNotSpecified,
-                           enabled = true,
-                           keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                           keyboardActions = KeyboardActions(onDone = {
-                               systemKeyboardController?.hide()
-                           }))
+                        MultilineTextField(
+                            subtitleText = StringVO.Plain(block.question),
+                            captionText = StringVO.Resource(R.string.inscribe_motivates_question),
+                            value = block.reply,
+                            modifier = Modifier.fillMaxWidth(),
+                            hint = StringVO.Resource(R.string.write_your_answer_here),
+                            onValueChange = {
+                                onEvent(
+                                    QuestionEvent.OnBlockChange(
+                                        id = block.id,
+                                        reply = it,
+                                        type = TypeOfBlocks.OPEN,
+                                    )
+                                )
+                            },
+                            isError = block.answerNotSpecified,
+                            enabled = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(onDone = {
+                                systemKeyboardController?.hide()
+                            })
+                        )
 
-                       Spacer(modifier = Modifier.height( if (state.blocks.size - 1 == index) 34.dp else 40.dp))
-                   }
+                        Spacer(modifier = Modifier.height(if (state.blocks.size - 1 == index) 34.dp else 40.dp))
+                    }
 
                     TypeOfBlocks.SINGLE -> {
-                        val replyTextList: MutableList<Pair<String,Int>> = mutableListOf()
+                        val replyTextList: MutableList<Pair<String, Int>> = mutableListOf()
                         block.choiceReplies?.forEach {
                             replyTextList.add(Pair(it.reply, it.id))
                         }
@@ -146,19 +149,22 @@ private fun QuestionsScreen(
                             subtitleText = StringVO.Plain(block.question),
                             listOfChoiceReplise = replyTextList,
                             onClick = {
-                                val choiceRepliesList = updateSingleChoiceReplies(block.choiceReplies!!, it)
-                                onEvent(QuestionEvent.OnBlockChange(
-                                    id = block.id,
-                                    choiceReplies = choiceRepliesList,
-                                    type = TypeOfBlocks.SINGLE,
-                                ))
+                                val choiceRepliesList =
+                                    updateSingleChoiceReplies(block.choiceReplies!!, it)
+                                onEvent(
+                                    QuestionEvent.OnBlockChange(
+                                        id = block.id,
+                                        choiceReplies = choiceRepliesList,
+                                        type = TypeOfBlocks.SINGLE,
+                                    )
+                                )
                             }
                         )
-                        Spacer(modifier = Modifier.height( if (state.blocks.size - 1 == index) 34.dp else 40.dp))
+                        Spacer(modifier = Modifier.height(if (state.blocks.size - 1 == index) 34.dp else 40.dp))
                     }
 
                     TypeOfBlocks.MULTIPLE -> {
-                        val replyTextList: MutableList<Pair<String,Int>> = mutableListOf()
+                        val replyTextList: MutableList<Pair<String, Int>> = mutableListOf()
                         block.choiceReplies?.forEach {
                             replyTextList.add(Pair(it.reply, it.id))
                         }
@@ -168,15 +174,18 @@ private fun QuestionsScreen(
                             captionText = StringVO.Resource(R.string.inscribe_professional_development_question),
                             listOfChoiceReplise = replyTextList,
                             onClick = {
-                                val choiceRepliesList = updateMultipleChoiceReplies(block.choiceReplies!!, it)
-                                onEvent(QuestionEvent.OnBlockChange(
-                                    id = block.id,
-                                    choiceReplies = choiceRepliesList,
-                                    type = TypeOfBlocks.SINGLE,
-                                ))
+                                val choiceRepliesList =
+                                    updateMultipleChoiceReplies(block.choiceReplies!!, it)
+                                onEvent(
+                                    QuestionEvent.OnBlockChange(
+                                        id = block.id,
+                                        choiceReplies = choiceRepliesList,
+                                        type = TypeOfBlocks.SINGLE,
+                                    )
+                                )
                             }
                         )
-                        Spacer(modifier = Modifier.height( if (state.blocks.size - 1 == index) 34.dp else 40.dp))
+                        Spacer(modifier = Modifier.height(if (state.blocks.size - 1 == index) 34.dp else 40.dp))
                     }
 
                     TypeOfBlocks.RANGE -> {
@@ -184,30 +193,35 @@ private fun QuestionsScreen(
                             subtitleText = StringVO.Plain(block.question),
                             modifier = Modifier.fillMaxWidth(),
                             onValueChange = {
-                                onEvent(QuestionEvent.OnBlockChange(
-                                    id = block.id,
-                                    selectedValue = it,
-                                    type = TypeOfBlocks.RANGE,
-                                ))
+                                onEvent(
+                                    QuestionEvent.OnBlockChange(
+                                        id = block.id,
+                                        selectedValue = it,
+                                        type = TypeOfBlocks.RANGE,
+                                    )
+                                )
                             },
                             isError = block.answerNotSpecified,
                             leftEvaluateText = StringVO.Plain(block.leftPole),
                             rightEvaluateText = StringVO.Plain(block.rightPole)
                         )
-                        Spacer(modifier = Modifier.height( if (state.blocks.size - 1 == index) 34.dp else 40.dp))
+                        Spacer(modifier = Modifier.height(if (state.blocks.size - 1 == index) 34.dp else 40.dp))
                     }
 
                     TypeOfBlocks.TEXT -> {
-                        val itemsOfDescriptionBlock: MutableList<Pair<String,String>> = mutableListOf()
+                        val itemsOfDescriptionBlock: MutableList<Pair<String, String>> =
+                            mutableListOf()
                         block.description.forEach { itemOfBlockDescription ->
-                            itemsOfDescriptionBlock.add(Pair(
-                                when (itemOfBlockDescription.type)
-                                {
-                                TypeOfTitle.UNSTYLED -> "unstyled"
-                                TypeOfTitle.HEADER_ONE -> "header-one"
-                                TypeOfTitle.HEADER_TWO -> "header-two"
-                            },
-                                itemOfBlockDescription.text))
+                            itemsOfDescriptionBlock.add(
+                                Pair(
+                                    when (itemOfBlockDescription.type) {
+                                        TypeOfTitle.UNSTYLED -> "unstyled"
+                                        TypeOfTitle.HEADER_ONE -> "header-one"
+                                        TypeOfTitle.HEADER_TWO -> "header-two"
+                                    },
+                                    itemOfBlockDescription.text
+                                )
+                            )
                         }
                         TextFieldQuestion(
                             modifier = Modifier.fillMaxWidth(),
@@ -215,20 +229,23 @@ private fun QuestionsScreen(
                             enabled = true,
                             listOfBlockDescription = itemsOfDescriptionBlock
                         )
-                        Spacer(modifier = Modifier.height( if (state.blocks.size - 1 == index) 34.dp else 40.dp))
+                        Spacer(modifier = Modifier.height(if (state.blocks.size - 1 == index) 34.dp else 40.dp))
                     }
 
                     TypeOfBlocks.IMAGE -> {
-                        Box(modifier = Modifier
-                            .background(
-                                color = InTouchTheme.colors.input85,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .fillMaxWidth()
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = InTouchTheme.colors.input85,
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .fillMaxWidth()
                         ) {
-                            Column (modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .padding(top = 14.dp, bottom = 20.dp))
+                            Column(
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
+                                    .padding(top = 14.dp, bottom = 20.dp)
+                            )
                             {
                                 Text(
                                     text = StringVO.Plain(block.question).value(),
@@ -236,21 +253,16 @@ private fun QuestionsScreen(
                                     color = InTouchTheme.colors.textGreen
                                 )
                                 Spacer(modifier = Modifier.height(12.dp))
-                                /*AsyncImage(
-                                    model = block.image,                                    КОГДА ПРИХОДЯЩУЮ ССЫЛКУ ПОМЕНЯЮТ НА HTTPS - РАСКОММЕНИТЬ
+                                AsyncImage(
+                                    model = block.image,
                                     contentDescription = "task image on questions screen",
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier.fillMaxSize(),
                                     placeholder = painterResource(id = care.intouch.uikit.R.drawable.dunning_kruger_effect_image)
-                                )*/
-                                Image(
-                                    painter = painterResource(id = care.intouch.uikit.R.drawable.dunning_kruger_effect_image),
-                                    contentDescription = "task image on introductory questions screen",
-                                    contentScale = ContentScale.Fit
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height( if (state.blocks.size - 1 == index) 34.dp else 40.dp))
+                        Spacer(modifier = Modifier.height(if (state.blocks.size - 1 == index) 34.dp else 40.dp))
                     }
 
                     else -> {
@@ -258,7 +270,7 @@ private fun QuestionsScreen(
                     }
                 }
             }
-            Row (
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -287,7 +299,7 @@ private fun QuestionsScreen(
             )
             Spacer(modifier = Modifier.height(40.dp))
         }
-        }
+    }
     if (state.isShowClosingDialog) {
         Surface(
             modifier = Modifier
@@ -306,7 +318,8 @@ private fun QuestionsScreen(
                     firstLineText = StringVO.Resource(R.string.questions_popap_closing_task_first_line),
                     secondLineText = StringVO.Resource(R.string.questions_popup_closing_task_second_line),
                     intouchButtonText = StringVO.Resource(R.string.save_in_progress_button),
-                    secondaryButtonText = StringVO.Resource(R.string.discard_close_button))
+                    secondaryButtonText = StringVO.Resource(R.string.discard_close_button)
+                )
             }
         )
     }
@@ -329,36 +342,49 @@ private fun QuestionsScreen(
                         },
                         firstLineText = StringVO.Resource(R.string.questions_popap_not_all_filled),
                         intouchButtonText = StringVO.Resource(R.string.back_button),
-                        secondaryButtonText = StringVO.Resource(R.string.complete_as_is_button))
+                        secondaryButtonText = StringVO.Resource(R.string.complete_as_is_button)
+                    )
                 }
-                }
+            }
         )
     }
 }
 
-private fun updateSingleChoiceReplies(list: List<AssignmentsChoiceReplies>, id: Int): List<AssignmentsChoiceReplies> {
+private fun updateSingleChoiceReplies(
+    list: List<AssignmentsChoiceReplies>,
+    id: Int
+): List<AssignmentsChoiceReplies> {
     val result: MutableList<AssignmentsChoiceReplies> = mutableListOf()
     list.forEach {
-        if(it.id == id) {
-            result.add(it.copy(
-                checked = true
-            ))
+        if (it.id == id) {
+            result.add(
+                it.copy(
+                    checked = true
+                )
+            )
         } else {
-            result.add(it.copy(
-                checked = false
-            ))
+            result.add(
+                it.copy(
+                    checked = false
+                )
+            )
         }
     }
     return result
 }
 
-private fun updateMultipleChoiceReplies(list: List<AssignmentsChoiceReplies>, id: Int): List<AssignmentsChoiceReplies> {
+private fun updateMultipleChoiceReplies(
+    list: List<AssignmentsChoiceReplies>,
+    id: Int
+): List<AssignmentsChoiceReplies> {
     val result: MutableList<AssignmentsChoiceReplies> = mutableListOf()
     list.forEach {
-        if(it.id == id) {
-            result.add(it.copy(
-                checked = !it.checked
-            ))
+        if (it.id == id) {
+            result.add(
+                it.copy(
+                    checked = !it.checked
+                )
+            )
         } else {
             result.add(it)
         }

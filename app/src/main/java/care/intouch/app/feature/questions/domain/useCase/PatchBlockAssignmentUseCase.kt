@@ -14,6 +14,5 @@ interface PatchBlockAssignmentUseCase {
         override suspend fun invoke(id: Int, data: BlockUpdate): Result<Assignments> {
             return assignmentsRepository.patchClientAssingment(id, data)
         }
-
     }
 }

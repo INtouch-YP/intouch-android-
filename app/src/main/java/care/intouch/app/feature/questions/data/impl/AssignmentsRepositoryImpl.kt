@@ -31,7 +31,7 @@ class AssignmentsRepositoryImpl  @Inject constructor(
                     val response = handleErrorResponse<Assignments>(e.errorBody)
                     Result.failure(
                         NetworkException.BadRequest(
-                            "Надо сюда поймать ошибку какую-нибудь",
+                            "Error. Bad Request.",
                             e.httpStatusCode
                         )
                     )
@@ -55,7 +55,7 @@ class AssignmentsRepositoryImpl  @Inject constructor(
                     val response = handleErrorResponse<Assignments>(e.errorBody)
                     Result.failure(
                         NetworkException.BadRequest(
-                            "Надо сюда поймать ошибку какую-нибудь",
+                            "Error. Bad Request.",
                             e.httpStatusCode
                         )
                     )
@@ -79,7 +79,7 @@ class AssignmentsRepositoryImpl  @Inject constructor(
                     val response = handleErrorResponse<Assignments>(e.errorBody)
                     Result.failure(
                         NetworkException.BadRequest(
-                            "Надо сюда поймать ошибку какую-нибудь",
+                            "Error. Bad Request.",
                             e.httpStatusCode
                         )
                     )
