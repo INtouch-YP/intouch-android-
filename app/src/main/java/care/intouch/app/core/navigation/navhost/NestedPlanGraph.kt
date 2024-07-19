@@ -26,7 +26,6 @@ fun NavGraphBuilder.addNestedPlanGraph(
 
         composable(route = TaskIntroduction.route) {
             IntroductoryQuestionsScreen(
-                itemId = null,
                 onBackClick = {
                     navController.popBackStack()
                 },
