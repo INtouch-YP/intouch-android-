@@ -4,9 +4,8 @@ import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,79 +22,56 @@ import care.intouch.uikit.ui.RegularChips
 @Composable
 fun ChipsRow(
     modifier: Modifier = Modifier,
-    firstChipsTitle: StringVO = StringVO.Resource(R.string.show_all),
-    secondChipsTitle: StringVO = StringVO.Resource(R.string.to_do),
-    thirdChipsTitle: StringVO = StringVO.Resource(R.string.in_progress),
-    fourthChipsTitle: StringVO = StringVO.Resource(R.string.done),
-    onFirstChipsClick: () -> Unit,
-    onSecondChipsClick: () -> Unit,
-    onThirdChipsClick: () -> Unit,
-    onFourthChipsClick: () -> Unit,
+    chipsRowList: List<ChipsRowItem>
 ) {
     var selectedChips by remember {
-        mutableStateOf(firstChipsTitle)
+        mutableStateOf(chipsRowList[0].title)
     }
 
-    val scrollState = rememberScrollState()
-
-    Row(
-        modifier = modifier.horizontalScroll(scrollState),
+    LazyRow(
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        RegularChips(
-            text = firstChipsTitle,
-            selected = firstChipsTitle == selectedChips,
-            selectedColor = InTouchTheme.colors.mainGreen,
-            onClick = {
-                if (firstChipsTitle != selectedChips) {
-                    selectedChips = firstChipsTitle
-                    onFirstChipsClick.invoke()
-                }
-            }
-        )
-        RegularChips(
-            text = secondChipsTitle,
-            selected = secondChipsTitle == selectedChips,
-            selectedColor = InTouchTheme.colors.mainGreen,
-            onClick = {
-                if (secondChipsTitle != selectedChips) {
-                    selectedChips = secondChipsTitle
-                    onSecondChipsClick.invoke()
-                }
-            }
-        )
-        RegularChips(
-            text = thirdChipsTitle,
-            selected = thirdChipsTitle == selectedChips,
-            selectedColor = InTouchTheme.colors.mainGreen,
-            onClick = {
-                if (thirdChipsTitle != selectedChips) {
-                    selectedChips = thirdChipsTitle
-                    onThirdChipsClick.invoke()
-                }
-            }
-        )
-        RegularChips(
-            text = fourthChipsTitle,
-            selected = fourthChipsTitle == selectedChips,
-            selectedColor = InTouchTheme.colors.mainGreen,
-            onClick = {
-                if (fourthChipsTitle != selectedChips) {
-                    selectedChips = fourthChipsTitle
-                    onFourthChipsClick.invoke()
-                }
-            }
-        )
+         items(chipsRowList) { chipsRowItem ->
+             RegularChips(
+                 text = chipsRowItem.title,
+                 selected = chipsRowItem.title == selectedChips,
+                 selectedColor = InTouchTheme.colors.mainGreen,
+                 onClick = {
+                     if (chipsRowItem.title != selectedChips) {
+                         selectedChips = chipsRowItem.title
+                         chipsRowItem.onItemClick.invoke()
+                     }
+                 }
+             )
+         }
     }
 }
 
 @Composable
-@Preview()
+@Preview(showBackground = true)
 fun ChipsRowPreview() {
+
+    val chipsRowList = listOf(
+        ChipsRowItem(
+            title = StringVO.Resource(R.string.show_all),
+            onItemClick = {}
+        ),
+        ChipsRowItem(
+            title = StringVO.Resource(R.string.to_do),
+            onItemClick = {}
+        ),
+        ChipsRowItem(
+            title = StringVO.Resource(R.string.in_progress),
+            onItemClick = {}
+        ),
+        ChipsRowItem(
+            title = StringVO.Resource(R.string.done),
+            onItemClick = {}
+        ),
+    )
+
     ChipsRow(
-        onFirstChipsClick = {},
-        onSecondChipsClick = {},
-        onThirdChipsClick = {},
-        onFourthChipsClick = {}
+        chipsRowList = chipsRowList
     )
 }

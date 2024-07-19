@@ -22,7 +22,7 @@ import care.intouch.uikit.ui.navigation.CustomTopBar
 fun PlanHeader(
     modifier: Modifier = Modifier,
     title: StringVO = StringVO.Resource(R.string.my_plan),
-    backgroundImage: ImageVO = ImageVO.Resource(R.drawable.head_background_small_h165),
+    backgroundImage: ImageVO = ImageVO.Resource(R.drawable.my_plan_header),
     titleStyle: TextStyle = InTouchTheme.typography.titleLarge,
     onBackArrowClick: () -> Unit
 ) {

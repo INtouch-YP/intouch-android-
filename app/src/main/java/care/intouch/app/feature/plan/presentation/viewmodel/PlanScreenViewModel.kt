@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,7 +33,7 @@ class PlanScreenViewModel @Inject constructor(
     val sideEffect: SharedFlow<PlanScreenSideEffect> = _sideEffect.asSharedFlow()
 
     init {
-        onEvent(PlanScreenEvent.GetAssignmentsEvent)
+        getAssignments()
     }
 
     fun onEvent(planScreenEvent: PlanScreenEvent) {

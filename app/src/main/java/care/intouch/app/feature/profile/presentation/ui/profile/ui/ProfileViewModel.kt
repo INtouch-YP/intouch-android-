@@ -1,5 +1,6 @@
 package care.intouch.app.feature.profile.presentation.ui.profile.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import care.intouch.app.R
@@ -7,6 +8,7 @@ import care.intouch.app.feature.authorization.domain.api.UserStorage
 import care.intouch.app.feature.authorization.domain.models.User
 import care.intouch.app.feature.common.data.models.exception.NetworkException
 import care.intouch.app.feature.profile.domain.profile.models.ProfileData
+import care.intouch.app.feature.profile.domain.profile.useCase.ConfirmEmailChangeUseCase
 import care.intouch.app.feature.profile.domain.profile.useCase.UpdateUserDataUseCase
 import care.intouch.app.feature.profile.domain.profile.useCase.UpdateUserEmailUseCase
 import care.intouch.app.feature.profile.presentation.ui.profile.models.ProfileDataEvent
@@ -25,7 +27,8 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val userStorage: UserStorage,
     private val updateUserDataUseCase: UpdateUserDataUseCase,
-    private val updateUserEmailUseCase: UpdateUserEmailUseCase
+    private val updateUserEmailUseCase: UpdateUserEmailUseCase,
+    private val confirmEmailChangeUseCase: ConfirmEmailChangeUseCase
 ) : ViewModel() {
 
     private var _state = MutableStateFlow(ProfileState())
@@ -33,6 +36,7 @@ class ProfileViewModel @Inject constructor(
     private var userDataFromSharedPref: User? = null
     private var currentProfileData: ProfileData = ProfileData("", "")
     private var currentEmail: String = ""
+    private var updateEmailFlag = true
 
     init {
         readUserDataFromSharedPreferences()
@@ -57,7 +61,7 @@ class ProfileViewModel @Inject constructor(
                     name = event.name,
                     lastName = event.lastName,
                     email = event.email,
-                    saveChangesButton = event.saveChangesButton
+                    saveChangesButton = event.saveChangesButton,
                 )
             }
 
@@ -94,8 +98,13 @@ class ProfileViewModel @Inject constructor(
             is ProfileDataEvent.OnSingOutButtonClick -> {
                 signOut()
             }
+
+            is ProfileDataEvent.onConfirmEmailUpdate -> {
+                confirmEmailUpdate(event.id, event.token)
+            }
         }
     }
+
 
     private fun updateName(event: ProfileDataEvent.OnName) {
         if (event.name.length <= MAX_NAME_LENGTH) {
@@ -176,7 +185,7 @@ class ProfileViewModel @Inject constructor(
     private fun readUserDataFromSharedPreferences() {
         viewModelScope.launch(Dispatchers.IO) {
             val dataFromSharedPreferences: User? = userStorage.read()
-            if(dataFromSharedPreferences != null){
+            if (dataFromSharedPreferences != null) {
                 _state.update {
                     _state.value.copy(
                         dataIsValid = true,
@@ -216,7 +225,8 @@ class ProfileViewModel @Inject constructor(
                 emailTextFieldEnabled = email,
                 nameButtonEnabled = !name,
                 lastNameButtonEnabled = !lastName,
-                emailButtonEnabled = !email
+                emailButtonEnabled = !email,
+                emailChangeDeepLinkRequestSent = false,
             )
         }
     }
@@ -272,6 +282,7 @@ class ProfileViewModel @Inject constructor(
 
     private fun updateUserData(event: ProfileDataEvent.OnSaveChangesButtonClick) {
         viewModelScope.launch(Dispatchers.IO) {
+
             updateUserDataUseCase.invoke(currentProfileData, userDataFromSharedPref!!.id)
                 .onSuccess {
                     updateStateWhenUserDataOnSuccess(StringVO.Resource(R.string.info_about_change_profile_data))
@@ -300,11 +311,12 @@ class ProfileViewModel @Inject constructor(
     }
 
     private suspend fun saveUserDataInSharedPreferences() {
-        val emailToSave: String = if (_state.value.emailResponseIsSuccess && _state.value.emailColorMessageIsGreenOrRed){
-            currentEmail
-        }else {
-            userDataFromSharedPref!!.email
-        }
+        val emailToSave: String =
+            if (_state.value.emailResponseIsSuccess && _state.value.emailColorMessageIsGreenOrRed) {
+                currentEmail
+            } else {
+                userDataFromSharedPref!!.email
+            }
         userStorage.save(
             User(
                 id = userDataFromSharedPref!!.id,
@@ -324,7 +336,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     private suspend fun updateStateWhenEmailOnSuccess(message: StringVO) {
-        saveUserDataInSharedPreferences()
+
         _state.update {
             _state.value.copy(
                 resultMessageOfChangeEmailRequest = message,
@@ -332,10 +344,11 @@ class ProfileViewModel @Inject constructor(
                 emailColorMessageIsGreenOrRed = true,
             )
         }
+        saveUserDataInSharedPreferences()
     }
 
     private suspend fun updateStateWhenUserDataOnSuccess(message: StringVO) {
-        saveUserDataInSharedPreferences()
+
         _state.update {
             _state.value.copy(
                 resultMessageOfChangeNameRequest = message,
@@ -343,6 +356,7 @@ class ProfileViewModel @Inject constructor(
                 nameResponseHasBeenReceived = true
             )
         }
+        saveUserDataInSharedPreferences()
     }
 
     private fun updateStateWhenUserEmailOnError(message: StringVO) {
@@ -363,6 +377,46 @@ class ProfileViewModel @Inject constructor(
                 nameResponseIsSuccess = false,
                 nameResponseHasBeenReceived = true
             )
+        }
+    }
+
+    private fun confirmEmailUpdate(id: String?, token: String?) {
+        if (id != null && token != null && updateEmailFlag) {
+            viewModelScope.launch(Dispatchers.IO) {
+                confirmEmailChangeUseCase.invoke(id, token)
+                    .onSuccess {
+                        if(it.message != null) {
+                            val message = it.message
+                            _state.update {
+                                _state.value.copy(
+                                    emailChangeDeepLinkRequestSent = true,
+                                    emailChangeDeepLinkRequestSentIsSuccess = true,
+                                    emailChangeDeepLinkRequestMessage = StringVO.Plain(message)
+                                )
+                            }
+                        } else if (it.error != null) {
+                            val message = it.error
+                            _state.update {
+                                _state.value.copy(
+                                    emailChangeDeepLinkRequestSent = true,
+                                    emailChangeDeepLinkRequestSentIsSuccess = false,
+                                    emailChangeDeepLinkRequestMessage = StringVO.Plain(message)
+                                )
+                            }
+                        }
+
+                    }
+                    .onFailure {
+                        _state.update {
+                            _state.value.copy(
+                                emailChangeDeepLinkRequestSent = true,
+                                emailChangeDeepLinkRequestSentIsSuccess = false,
+                                emailChangeDeepLinkRequestMessage = StringVO.Resource(R.string.unknown_error)
+                            )
+                        }
+                    }
+            }
+            updateEmailFlag = false
         }
     }
 

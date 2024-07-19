@@ -28,6 +28,7 @@ fun AppNavHost(
     authStartDestination: String?,
     modifier: Modifier
 ) {
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -46,8 +47,8 @@ fun AppNavHost(
 
         composable(route = Plan.route) {
             PlanScreen(
-                onTaskListItemClick = {
-                    navController.navigate(route = QuestionsRouteBranch.route/*PlanRouteBranch.route*/)
+                onTaskListItemClick = { itemId ->
+                    navController.navigate(route = QuestionsRouteBranch.createRoute(itemId))
                 },
                 onBackArrowClick = {
                     navController.navigate(route = Home.route)

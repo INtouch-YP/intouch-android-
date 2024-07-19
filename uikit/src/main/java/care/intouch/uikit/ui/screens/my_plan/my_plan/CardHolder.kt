@@ -24,6 +24,7 @@ fun CardHolder(
     text: String,
     backgroundColor: Color = InTouchTheme.colors.mainBlue,
     dateText: String,
+    onCardHolderClick: () -> Unit,
     onDuplicateMenuItemClick: () -> Unit,
     onClearMenuItemClick: () -> Unit,
     onClickToggle: (Boolean) -> Unit,
@@ -71,7 +72,8 @@ fun CardHolder(
         onClickToggle = {
             toggleIsChecked = !toggleIsChecked
             onClickToggle.invoke(toggleIsChecked)
-        }
+        },
+        onPlanCardClick = { onCardHolderClick.invoke() }
     )
 }
 
@@ -82,6 +84,7 @@ fun CardHolderPreview() {
         chipText = StringVO.Plain("Done"),
         text = "Some text",
         dateText = "04.07.2024",
+        onCardHolderClick = {},
         onDuplicateMenuItemClick = {},
         onClearMenuItemClick = {},
         onClickToggle = {}
