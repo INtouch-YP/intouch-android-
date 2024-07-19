@@ -25,7 +25,6 @@ fun NavGraphBuilder.addNestedQuestionsGraph(
        composable(route = IntroductoryQuestion.route) { backStackEntry ->
            val itemId = backStackEntry.arguments?.getInt("itemId")
            IntroductoryQuestionsScreen(
-               itemId = itemId,
                onBackClick = {
                     navController.popBackStack()
                },
