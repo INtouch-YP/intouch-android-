@@ -1,5 +1,6 @@
 package care.intouch.app.feature.questions.data.impl
 
+import android.util.Log
 import care.intouch.app.feature.authorization.data.models.exception.AuthenticationException
 import care.intouch.app.feature.authorization.data.models.mappers.NetworkToUserExceptionMapper.Companion.COULD_NOT_CONVERT_TO_ERROR_RESPONSE
 import care.intouch.app.feature.common.data.models.exception.NetworkException
@@ -69,13 +70,20 @@ class AssignmentsRepositoryImpl  @Inject constructor(
 
     override suspend fun patchClientAssingment(id: Int, data: BlockUpdate): Result<Assignments> {
         try {
+            Log.d("MY_INTOUCH_TAG", "Мы в AssignmentsRepositoryImpl в блоке try")
             val response = assignmentsApi.patchClientAssignment(id, convertorBlock.map(data))
+            Log.d("MY_INTOUCH_TAG", "Запрос в AssignmentsRepositoryImpl в блоке try выполнен")
+            Log.d("MY_INTOUCH_TAG", "Посмотрим что там в ответе - id =  ${response.id}")
+            Log.d("MY_INTOUCH_TAG", "Посмотрим что там в ответе - title =  ${response.title}")
+            Log.d("MY_INTOUCH_TAG", "Посмотрим что там в ответе - blocks count =  ${response.blocks.count()}")
             return Result.success(
                 convertor.map(response)
             )
         } catch (e: NetworkException) {
+            Log.d("MY_INTOUCH_TAG", "Мы в AssignmentsRepositoryImpl в блоке catch 1")
             return when (e) {
                 is NetworkException.BadRequest -> {
+                    Log.d("MY_INTOUCH_TAG", "Мы в AssignmentsRepositoryImpl в блоке catch 2")
                     val response = handleErrorResponse<Assignments>(e.errorBody)
                     Result.failure(
                         NetworkException.BadRequest(
@@ -85,6 +93,7 @@ class AssignmentsRepositoryImpl  @Inject constructor(
                     )
                 }
                 else -> {
+                    Log.d("MY_INTOUCH_TAG", "Мы в AssignmentsRepositoryImpl в блоке catch 3")
                     Result.failure(e)
                 }
             }

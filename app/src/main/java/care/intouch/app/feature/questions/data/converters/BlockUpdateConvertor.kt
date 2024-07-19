@@ -15,8 +15,8 @@ class BlockUpdateConvertor @Inject constructor() {
             blocks = block.blocks?.map {
                 updateBlockMapToDto(it)
             },
-            grade = block.grade,
-            review = block.review
+            grade = block.grade?: 0,
+            review = block.review?: ""
         )
     }
 
